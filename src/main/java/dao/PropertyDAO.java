@@ -13,9 +13,9 @@ public interface PropertyDAO extends BaseDAO {
      * @return a list of PropertyBaseData ojects
      * @throws SQLException if the query cannot be executed
      */
-    List<ProprtyBaseData> listAllPropertiesByOwner(String ownerId) throws SQLException;
+    List<PropertyBaseData> listAllPropertiesByOwner(String ownerId) throws SQLException;
 
-    final class ProprtyBaseData{
+    final class PropertyBaseData{
         private final int propertyId;
         private final String propertyType;
         private final String propertyAddress;
@@ -25,7 +25,7 @@ public interface PropertyDAO extends BaseDAO {
         private final LocalDate lastPaymentDate;
         private final String ownerID;
 
-        public ProprtyBaseData(
+        public PropertyBaseData(
                 int propertyId,
                 String propertyType,
                 String propertyAddress,

@@ -13,7 +13,7 @@ public class PropertyOracleDAO extends AbstractOracleDAO implements PropertyDAO 
     }
 
     @Override
-    public List<ProprtyBaseData> listAllPropertiesByOwner(String ownerId) throws SQLException {
+    public List<PropertyBaseData> listAllPropertiesByOwner(String ownerId) throws SQLException {
         return null;
     }
 }
