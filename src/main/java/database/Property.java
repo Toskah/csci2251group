@@ -8,7 +8,7 @@ import java.sql.SQLException;
  *
  * @author Alex
  */
-public class PropertyDB {
+public class Property {
     private Integer id;
     private String type;
     private CityCode cityCode;
@@ -23,15 +23,16 @@ public class PropertyDB {
     private Integer bathCount;
     private Integer garageCount;
     private Integer homeFootage;
-    private Integer yardFootage;
+    private Integer fYardFootage;
+    private Integer bYardFootage;
     private static final Integer maxFootage = 5000;
-    private final static String SQLcreate = "(propertyid INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + " type CHAR(1), citycode CHAR(" + CityCode.getMaxLength() + "), addr VARCHAR(" 
-            + maxAddrLength.toString() + "), zipcode char(10)), roomCount Integer(1), "
+    private final static String SQLcreate = "(propertyID INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + " type CHAR(1), cityCode CHAR(" + CityCode.getMaxLength() + "), addr VARCHAR(" 
+            + maxAddrLength.toString() + "), zipCode char(10)), roomCount Integer(1), "
             + "bathCount Integer(1), garageCount Integer(1), homeFootage Integer, "
             + "fYardFootage Integer, bYardFootage Integer";
     
-    PropertyDB(String type, CityCode cityCode, String streetAddress, String zipCode, Integer roomCount, Integer bathCount, Integer garageCount, Integer homeFootage, Integer yardFootage) {
+    Property(String type, CityCode cityCode, String streetAddress, String zipCode, int roomCount, int bathCount, int garageCount, int homeFootage, int fYardFootage, int bYardFootage) {
         validateType(type);
         validateCity(cityCode.toString());
         validateAddress(streetAddress);
@@ -40,7 +41,7 @@ public class PropertyDB {
         validateBaths(bathCount);
         validateGarage(garageCount);
         validateHomeFootage(homeFootage);
-        validateYardFootage(yardFootage);
+        validateYardFootage(fYardFootage, bYardFootage);
         this.type = type;
         this.cityCode = cityCode;
         this.streetAddress = streetAddress;
@@ -49,17 +50,24 @@ public class PropertyDB {
         this.bathCount = bathCount;
         this.garageCount = garageCount;
         this.homeFootage = homeFootage;
-        this.yardFootage = yardFootage;
+        this.fYardFootage = fYardFootage;
+        this.bYardFootage = bYardFootage;
     }
     
-    PropertyDB(ResultSet result) throws SQLException {
+    Property(ResultSet result) throws SQLException {
         String dbType, dbAddr, dbCity, dbZip;
-        Integer dbID, dbRooms, dbBaths, dbGarages, dbHomeFootage, dbYardFootage;
+        Integer dbID, dbRooms, dbBaths, dbGarages, dbHomeFootage, dbFYardFootage, dbBYardFootage;
         dbID = result.getInt("propertyid");
         dbType = result.getString("type");
         dbCity = result.getString("citycode");
         dbAddr = result.getString("addr");
         dbZip = result.getString("zipcode");
+        dbRooms = result.getInt("roomCount");
+        dbBaths = result.getInt("bathCount");
+        dbGarages = result.getInt("garageCount");
+        dbHomeFootage = result.getInt("homeFootage");
+        dbFYardFootage = result.getInt("fYardFootage");
+        dbBYardFootage = result.getInt("bYardFootage");
         validateType(dbType);
         validateAddress(dbAddr);
         validateZip(dbZip);
@@ -69,17 +77,18 @@ public class PropertyDB {
         validateBaths(bathCount);
         validateGarage(garageCount);
         validateHomeFootage(homeFootage);
-        validateYardFootage(yardFootage);
+        validateYardFootage(fYardFootage, bYardFootage);
         this.id = dbID;
         this.type = dbType;
         this.cityCode = CityCode.valueOf(dbCity);
         this.streetAddress = dbAddr;
         this.zipCode = dbZip;
-        this.roomCount = roomCount;
-        this.bathCount = bathCount;
-        this.garageCount = garageCount;
-        this.homeFootage = homeFootage;
-        this.yardFootage = yardFootage;
+        this.roomCount = dbRooms;
+        this.bathCount = dbBaths;
+        this.garageCount = dbGarages;
+        this.homeFootage = dbHomeFootage;
+        this.fYardFootage = dbFYardFootage;
+        this.bYardFootage = dbBYardFootage;
     }
     
     private void validateType(String type) {
@@ -179,12 +188,19 @@ public class PropertyDB {
         }
     }
     
-    private void validateYardFootage(Integer yardFootage) {
-        if (yardFootage <= 0) {
-             throw new IllegalArgumentException(String.format("Yard's square footage %d is invalid; must be > 0", yardFootage));
+    private void validateYardFootage(Integer fYardFootage, Integer bYardFootage) {
+        if (fYardFootage <= 0) {
+             throw new IllegalArgumentException(String.format("Front yard's square footage %d is invalid; must be > 0", fYardFootage));
         }
-        if (yardFootage > maxFootage) {
-            throw new IllegalArgumentException(String.format("Yard's square footage %d is invalid; must be <= %d", yardFootage, maxFootage));
+        if (fYardFootage > maxFootage) {
+            throw new IllegalArgumentException(String.format("Front yard's square footage %d is invalid; must be <= %d", fYardFootage, maxFootage));
+        }
+        
+        if (bYardFootage <= 0) {
+             throw new IllegalArgumentException(String.format("Back yard's square footage %d is invalid; must be > 0", bYardFootage));
+        }
+        if (bYardFootage > maxFootage) {
+            throw new IllegalArgumentException(String.format("Back yard's square footage %d is invalid; must be <= %d", bYardFootage, maxFootage));
         }
     }
     
@@ -220,10 +236,14 @@ public class PropertyDB {
         return homeFootage;
     }
     
-    public Integer getYardFootage() {
-        return yardFootage;
+    public Integer getFrontYardFootage() {
+        return fYardFootage;
     }
     
+    public Integer getBackYardFootage() {
+        return bYardFootage;
+    }
+
     public static String getSQLCreate() {
         return SQLcreate;
     }
@@ -234,8 +254,21 @@ public class PropertyDB {
             id = -1;
         }
         return String.format("%s%s%03d; %s, %s %s %s. Number of bedrooms/bathrooms/garages: "
-                + "%s/%s/%s. Home Footage: %s ft. Yard Footage: %s ft.", type, cityCode.toString(), 
+                + "%s/%s/%s. Home Footage: %s sq. ft. Front Yard Footage: %s sq. ft. Back Yard Footage: %s sq. .ft.", type, cityCode.toString(), 
                 id, streetAddress, cityCode.getFullName(), state, zipCode, roomCount, bathCount, 
-                garageCount, homeFootage, yardFootage);
+                garageCount, homeFootage, fYardFootage, bYardFootage);
+    }
+    
+    public void bindvars(PreparedStatement ps) throws SQLException {
+        ps.setString(1, type);
+        ps.setString(2, cityCode.toString());
+        ps.setString(3, streetAddress);
+        ps.setString(4, zipCode);
+        ps.setInt(5, roomCount);
+        ps.setInt(6, bathCount);
+        ps.setInt(7, garageCount);
+        ps.setInt(8, homeFootage);
+        ps.setInt(9, fYardFootage);
+        ps.setInt(10, bYardFootage);
     }
 }
