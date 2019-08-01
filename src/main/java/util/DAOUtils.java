@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.joining;
 
 /**
  * Static methods supporting DAO operations (such as connection management)
+ * @author Joshua Escareno
  */
 public interface DAOUtils {
 

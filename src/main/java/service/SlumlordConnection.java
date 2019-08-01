@@ -7,8 +7,10 @@ import java.util.logging.Logger;
 import static java.util.logging.Level.*;
 
 /**
- * Provides database connection to standalone jobs, those which are run from the cron or Jenkins
- * outside of the Banner Batch Integration Framework.
+ * Provides database connection to standalone jobs,
+ * This is used mainly due to every day use with DAOs and out of habit
+ *
+ * @author Joshua Escareno
  */
 public class SlumlordConnection {
     // Retrieve logger and log class name for troubleshooting

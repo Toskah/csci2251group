@@ -6,6 +6,10 @@ import java.sql.Connection;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
+/**
+ * Factory abstract class for instantiating DAOs
+ * @author Joshua Escareno
+ */
 public abstract class DAOFactory {
     private static Logger getLogger() {
         return Logger.getLogger(DAOFactory.class.getName());

@@ -18,6 +18,8 @@ import java.util.Map;
  * pool when the resource goes out of scope, i.e., when the {@code close()} method is called by
  * the DI context. TODO: Not sure how to handle this correctly in all possible situations.
  * For now, connections are <b>NOT</b> being released when the DAO is closed.
+ *
+ * @author Joshua Escareno
  */
 public abstract class AbstractOracleDAO implements BaseDAO {
     protected static final int DEFAULT_COLLATE_SIZE = 1000;
