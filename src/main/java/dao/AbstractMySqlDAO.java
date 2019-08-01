@@ -21,17 +21,17 @@ import java.util.Map;
  *
  * @author Joshua Escareno
  */
-public abstract class AbstractOracleDAO implements BaseDAO {
+public abstract class AbstractMySqlDAO implements BaseDAO {
     protected static final int DEFAULT_COLLATE_SIZE = 1000;
 
     private final Connection conn;
     private final int collateSize;
 
-    protected AbstractOracleDAO(Connection conn) {
+    protected AbstractMySqlDAO(Connection conn) {
         this(conn, DEFAULT_COLLATE_SIZE);
     }
 
-    protected AbstractOracleDAO(Connection conn, int collateSize) {
+    protected AbstractMySqlDAO(Connection conn, int collateSize) {
         this.conn = conn;
         this.collateSize = collateSize;
     }

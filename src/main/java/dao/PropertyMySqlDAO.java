@@ -17,7 +17,7 @@ import static java.util.logging.Level.WARNING;
  *
  * @author Joshua Escareno
  */
-public class PropertyOracleDAO extends AbstractOracleDAO implements PropertyDAO {
+public class PropertyMySqlDAO extends AbstractMySqlDAO implements PropertyDAO {
 
     //SQL statements
     private static final String ALL_PROPERTIES_BY_OWNER_QUERY
@@ -50,7 +50,7 @@ public class PropertyOracleDAO extends AbstractOracleDAO implements PropertyDAO 
     private final CallableStatement updatePropertyFee;
 
     private static Logger getLogger() {
-        return Logger.getLogger(PropertyOracleDAO.class.getName());
+        return Logger.getLogger(PropertyMySqlDAO.class.getName());
     }
 
     /**
@@ -58,7 +58,7 @@ public class PropertyOracleDAO extends AbstractOracleDAO implements PropertyDAO 
      *
      * @param conn the connection string to the DB you wish to connect to
      */
-    public PropertyOracleDAO(Connection conn) {
+    public PropertyMySqlDAO(Connection conn) {
         super(conn);
 
         this.listPropertiesByOwner = prepareQuery(ALL_PROPERTIES_BY_OWNER_QUERY);
