@@ -8,7 +8,7 @@ import java.sql.SQLException;
  *
  * @author Alex
  */
-public class Property {
+public class PropertyDB {
     private Integer id;
     private String type;
     private CityCode cityCode;
@@ -28,9 +28,10 @@ public class Property {
     private final static String SQLcreate = "(propertyid INTEGER PRIMARY KEY AUTOINCREMENT,"
             + " type CHAR(1), citycode CHAR(" + CityCode.getMaxLength() + "), addr VARCHAR(" 
             + maxAddrLength.toString() + "), zipcode char(10)), roomCount Integer(1), "
-            + "bathCount Integer(1), garageCount Integer(1), homeFootage Integer, yardFootage Integer";
+            + "bathCount Integer(1), garageCount Integer(1), homeFootage Integer, "
+            + "fYardFootage Integer, bYardFootage Integer";
     
-    Property(String type, CityCode cityCode, String streetAddress, String zipCode, Integer roomCount, Integer bathCount, Integer garageCount, Integer homeFootage, Integer yardFootage) {
+    PropertyDB(String type, CityCode cityCode, String streetAddress, String zipCode, Integer roomCount, Integer bathCount, Integer garageCount, Integer homeFootage, Integer yardFootage) {
         validateType(type);
         validateCity(cityCode.toString());
         validateAddress(streetAddress);
@@ -51,7 +52,7 @@ public class Property {
         this.yardFootage = yardFootage;
     }
     
-    Property(ResultSet result) throws SQLException {
+    PropertyDB(ResultSet result) throws SQLException {
         String dbType, dbAddr, dbCity, dbZip;
         Integer dbID, dbRooms, dbBaths, dbGarages, dbHomeFootage, dbYardFootage;
         dbID = result.getInt("propertyid");
@@ -236,25 +237,5 @@ public class Property {
                 + "%s/%s/%s. Home Footage: %s ft. Yard Footage: %s ft.", type, cityCode.toString(), 
                 id, streetAddress, cityCode.getFullName(), state, zipCode, roomCount, bathCount, 
                 garageCount, homeFootage, yardFootage);
-    }
-    
-    public String getInsertPSString(String table) {
-        return "INSERT INTO " + table + "(type, citycode, addr, zipcode)"
-                + "values (?,?,?,?);"; //UNFINISHED
-    }
-    
-    public void bindvars(PreparedStatement ps) throws SQLException {
-        ps.setString(1, type);
-        ps.setString(2, cityCode.toString());
-        ps.setString(3, streetAddress);
-        ps.setString(4, zipCode);//UNFINISHED
-    }
-    
-    public static String getSelectString(String table) {
-        return String.format("SELECT propertyid, type, citycode, addr, zipcode from %s;", table);
-    }
-    
-    public static String getSelectString(String table, CityCode city) {
-        return String.format("SELECT propertyid, type, citycode, addr, zipcode from %s where citycode = '%s';", table, city.toString());
     }
 }
