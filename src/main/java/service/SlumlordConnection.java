@@ -17,7 +17,7 @@ public class SlumlordConnection {
     private static final String CLASS_NAME = SlumlordConnection.class.getName();
     private static final Logger LOG = Logger.getLogger(CLASS_NAME);
 
-    private static final String DEFAULT_JDBC_CONNECTION = "jdbc:oracle:oci:@";
+    private static final String DEFAULT_JDBC_CONNECTION = "jdbc:mysql://localhost/";
     private static final String DEFAULT_USERNAME = "testuser";
 
     private static final String JDBC_CONNECTION_ENV = "JDBC_CONNECTION";
@@ -53,7 +53,7 @@ public class SlumlordConnection {
             String[] nameAndPassword = upw.split("/");
 
             if (nameAndPassword.length != 2) {
-                LOG.log(SEVERE, "Invalid {0}; unable to connect to Banner database.",
+                LOG.log(SEVERE, "Invalid {0}; unable to connect to slumlord database.",
                         USERNAME_PASSWORD_ENV);
                 throw new IllegalArgumentException("Invalid " + USERNAME_PASSWORD_ENV);
             }
@@ -64,7 +64,7 @@ public class SlumlordConnection {
             password = env.get(PASSWORD_ENV);
 
             if (password == null) {
-                LOG.log(SEVERE, "{0} not defined; unable to connect to Banner database.",
+                LOG.log(SEVERE, "{0} not defined; unable to connect to slumlord database.",
                         PASSWORD_ENV);
                 throw new IllegalArgumentException(PASSWORD_ENV + " not defined");
             }
@@ -122,14 +122,10 @@ public class SlumlordConnection {
             Long dur = System.currentTimeMillis() - start;
             LOG.log(SEVERE, "[SQLStats] CONNECT[{0} as {1}] failed({2}) in {3} ms",
                     new Object[]{cp.getUrl(), cp.getUsername(), e.getMessage().trim(), dur});
-            throw new RuntimeException("Unable to connect to Banner database.");
+            throw new RuntimeException("Unable to connect to Slumlord database.");
         }
 
         return instance;
-    }
-
-    public static boolean isProduction() {
-        return globalName.toLowerCase().startsWith("prod");
     }
 
     /**

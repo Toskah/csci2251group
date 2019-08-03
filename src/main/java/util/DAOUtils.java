@@ -2,6 +2,7 @@ package util;
 
 import service.SlumlordConnection;
 import oracle.jdbc.OracleConnection;
+import java.sql.Connection;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
@@ -24,17 +25,7 @@ import static java.util.stream.Collectors.joining;
  */
 public interface DAOUtils {
 
-    /**
-     * Name of the class holding database connection information in a Banner Batch Integration
-     * Framework (BIF) context
-     */
-    String SLUMLORD_CONTEXT_CLASS = "change.me.to.a.valid.string";
 
-    /**
-     * Name of the static method returning a database connection in a Banner Batch Integration
-     * Framework (BIF) context
-     */
-    String SLUMLORD_CONNECTION_METHOD = "getConnection";
 
     /**
      * Empty parameter list having correct syntax for a SQL "IN" clause
@@ -98,27 +89,12 @@ public interface DAOUtils {
         // is unavailable on the classpath.
         Connection conn = null;
 
-        /*try {
-            //TODO: create the connection here for the database
-
-            Class<?> brh = Class.forName(BANNER_BIF_CONTEXT_CLASS);
-            Method connProvider = brh.getDeclaredMethod(SLUMLORD_CONNECTION_METHOD);
-
-            conn = (Connection) connProvider.invoke(null);
-        } catch (ClassCastException
-                | ClassNotFoundException
-                | IllegalAccessException
-                | NoSuchMethodException
-                | InvocationTargetException e) {
-            // InvocationTargetException is what we get when the invoked method throws an
-            // exception. That exception is then wrapped inside the InvocationTargetException.
-        }*/
 
         if (conn == null) {
             conn = SlumlordConnection.getInstance();
         }
 
-        if (conn instanceof OracleConnection) {
+        if (conn instanceof Connection) {
             try {
                 OracleConnection oraConn = (OracleConnection) conn;
                 int currentRowPrefetch = oraConn.getDefaultRowPrefetch();
