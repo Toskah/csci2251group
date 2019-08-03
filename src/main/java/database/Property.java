@@ -33,7 +33,11 @@ public class Property {
     private static final Integer maxFootage = 5000;
     private static Connection db;
     private Date lastPaymentDate;
-    private final static String SQLcreate = "propertyID INTEGER NOT NULL AUTO_INCREMENT, type CHAR(1), cityCode CHAR(" + CityCode.getMaxLength() + "), addr VARCHAR(" + maxAddrLength + "), zipCode CHAR(5), roomCount INT(2), bathCount INT(1), garageCount INT(1), homeFootage INT, fYardFootage INT, bYardFootage INT, PRIMARY KEY (propertyID)";
+    private final static String SQLcreate = "propertyID INTEGER NOT NULL AUTO_INCREMENT, "
+            + "type CHAR(1), cityCode CHAR(" + CityCode.getMaxLength() + "), addr VARCHAR"
+            + "(" + maxAddrLength + "), zipCode CHAR(5), roomCount INT(2), bathCount INT(1), "
+            + "garageCount INT(1), homeFootage INT, fYardFootage INT, bYardFootage INT, "
+            + "PRIMARY KEY (propertyID)";
     
     /**
      * Property constructor for adding properties that checks required variables and stores them
@@ -48,7 +52,9 @@ public class Property {
      * @param fYardFootage
      * @param bYardFootage 
      */
-    Property(String type, CityCode cityCode, String streetAddress, String zipCode, int roomCount, int bathCount, int garageCount, int homeFootage, int fYardFootage, int bYardFootage) {
+    Property(String type, CityCode cityCode, String streetAddress, String zipCode, 
+            int roomCount, int bathCount, int garageCount, int homeFootage, int fYardFootage, 
+            int bYardFootage) {
         validateType(type);
         validateCity(cityCode.toString());
         validateAddress(streetAddress);
@@ -122,7 +128,8 @@ public class Property {
         }
 
         if (type.length() != 1) {
-            throw new IllegalArgumentException(String.format("Type '%s' is %d characters long; length is 1",
+            throw new IllegalArgumentException(String.format("Type '%s' is %d characters long; "
+                    + "length is 1",
                     type, type.length()));
         }
 
@@ -133,7 +140,8 @@ public class Property {
             case 'V':
                 break; // OK
             default:
-                throw new IllegalArgumentException(String.format("Illegal property type '%s'; valid types are: %s",
+                throw new IllegalArgumentException(String.format("Illegal property type '%s'; "
+                        + "valid types are: %s",
                         type, validTypes));
         }
     }
@@ -148,11 +156,13 @@ public class Property {
         }
 
         if (streetAddress.length() < minAddrLength) {
-            throw new IllegalArgumentException(String.format("Street address '%s' is %d characters long; min length is %d",
+            throw new IllegalArgumentException(String.format("Street address '%s' is %d "
+                    + "characters long; min length is %d",
                     streetAddress, streetAddress.length(), minAddrLength));
         }
         if (streetAddress.length() > maxAddrLength) {
-            throw new IllegalArgumentException(String.format("Street address '%s' is %d characters long; max length is %d",
+            throw new IllegalArgumentException(String.format("Street address '%s' is %d "
+                    + "characters long; max length is %d",
                     streetAddress, streetAddress.length(), maxAddrLength));
         }
     }
@@ -174,11 +184,13 @@ public class Property {
             throw new IllegalArgumentException(String.format("zip code must not be null"));
         }
         if (zipCode.length() != zipCodeLength) {
-            throw new IllegalArgumentException(String.format("Illegal zip code '%s' (length %d); valid codes are %d chars",
+            throw new IllegalArgumentException(String.format("Illegal zip code '%s' (length %d);"
+                    + " valid codes are %d chars",
                     zipCode, zipCode.length(), zipCodeLength));
         }
         if (!zipCode.matches("^[0-9]*$")) {
-            throw new IllegalArgumentException(String.format("Illegal zip code '%s'; valid codes only contain digits", zipCode));
+            throw new IllegalArgumentException(String.format("Illegal zip code '%s'; valid codes"
+                    + " only contain digits", zipCode));
         }
         // ADD CHECKING FOR FIRST TWO DIGITS BEING 87 or 88 for New Mexico
     }
@@ -189,7 +201,8 @@ public class Property {
      */
     private void validateID(Integer ID) {
         if (ID <= 0) {
-            throw new IllegalArgumentException(String.format("ID %d is invalid; must be > 0", ID));
+            throw new IllegalArgumentException(String.format("ID %d is invalid; must be > 0",
+                    ID));
         }
     }
     
@@ -199,10 +212,12 @@ public class Property {
      */
     private void validateRooms(Integer roomCount) {
         if (roomCount <= 0) {
-            throw new IllegalArgumentException(String.format("Number of rooms %d is invalid; must be > 0", roomCount));
+            throw new IllegalArgumentException(String.format("Number of rooms %d is invalid; "
+                    + "must be > 0", roomCount));
         }
         if (roomCount > 8) {
-            throw new IllegalArgumentException(String.format("Number of rooms %d is invalid; cannot be more than 8 rooms.", roomCount));
+            throw new IllegalArgumentException(String.format("Number of rooms %d is invalid; "
+                    + "cannot be more than 8 rooms.", roomCount));
         } //assumes there will not be a property with more than 8 rooms        
     }
     
@@ -212,10 +227,12 @@ public class Property {
      */
     private void validateBaths(Integer bathCount) {
         if (bathCount <= 0) {
-            throw new IllegalArgumentException(String.format("Number of bathrooms %d is invalid; must be > 0", bathCount));
+            throw new IllegalArgumentException(String.format("Number of bathrooms %d is invalid;"
+                    + " must be > 0", bathCount));
         }
         if (roomCount > 6) {
-            throw new IllegalArgumentException(String.format("Number of bathrooms %d is invalid; cannot be more than 6 rooms.", bathCount));
+            throw new IllegalArgumentException(String.format("Number of bathrooms %d is invalid;"
+                    + " cannot be more than 6 rooms.", bathCount));
         }
     }
     
@@ -225,10 +242,12 @@ public class Property {
      */
     private void validateGarage(Integer garageCount) {
         if (garageCount < 0) {
-            throw new IllegalArgumentException(String.format("Number of garages %d is invalid; must be >= 0", garageCount));
+            throw new IllegalArgumentException(String.format("Number of garages %d is invalid;"
+                    + " must be >= 0", garageCount));
         }
         if (garageCount > 4) {
-            throw new IllegalArgumentException(String.format("Number of garages %d is invalid; must be < 4", garageCount));
+            throw new IllegalArgumentException(String.format("Number of garages %d is invalid;"
+                    + " must be < 4", garageCount));
         }
     }
     
@@ -238,10 +257,12 @@ public class Property {
      */
     private void validateHomeFootage(Integer homeFootage) {
         if (homeFootage <= 0) {
-             throw new IllegalArgumentException(String.format("Home's square footage %d is invalid; must be > 0", homeFootage));
+             throw new IllegalArgumentException(String.format("Home's square footage %d is invalid;"
+                     + " must be > 0", homeFootage));
         }
         if (homeFootage > maxFootage) {
-            throw new IllegalArgumentException(String.format("Home's square footage %d is invalid; must be <= %d", homeFootage, maxFootage));
+            throw new IllegalArgumentException(String.format("Home's square footage %d is invalid;"
+                    + " must be <= %d", homeFootage, maxFootage));
         }
     }
     
@@ -252,17 +273,21 @@ public class Property {
      */
     private void validateYardFootage(Integer fYardFootage, Integer bYardFootage) {
         if (fYardFootage <= 0) {
-             throw new IllegalArgumentException(String.format("Front yard's square footage %d is invalid; must be > 0", fYardFootage));
+             throw new IllegalArgumentException(String.format("Front yard's square footage %d is"
+                     + " invalid; must be > 0", fYardFootage));
         }
         if (fYardFootage > maxFootage) {
-            throw new IllegalArgumentException(String.format("Front yard's square footage %d is invalid; must be <= %d", fYardFootage, maxFootage));
+            throw new IllegalArgumentException(String.format("Front yard's square footage %d is"
+                    + " invalid; must be <= %d", fYardFootage, maxFootage));
         }
         
         if (bYardFootage <= 0) {
-             throw new IllegalArgumentException(String.format("Back yard's square footage %d is invalid; must be > 0", bYardFootage));
+             throw new IllegalArgumentException(String.format("Back yard's square footage %d is"
+                     + " invalid; must be > 0", bYardFootage));
         }
         if (bYardFootage > maxFootage) {
-            throw new IllegalArgumentException(String.format("Back yard's square footage %d is invalid; must be <= %d", bYardFootage, maxFootage));
+            throw new IllegalArgumentException(String.format("Back yard's square footage %d is"
+                    + " invalid; must be <= %d", bYardFootage, maxFootage));
         }
     }
 
@@ -364,7 +389,8 @@ public class Property {
             id = -1;
         }
         return String.format("%s%s%03d; %s, %s %s %s. Number of bedrooms/bathrooms/garages: "
-                + "%s/%s/%s. Home Footage: %s sq. ft. Front Yard Footage: %s sq. ft. Back Yard Footage: %s sq. .ft.", type, cityCode.toString(), 
+                + "%s/%s/%s. Home Footage: %s sq. ft. Front Yard Footage: %s sq. ft. Back "
+                + "Yard Footage: %s sq. .ft.", type, cityCode.toString(), 
                 id, streetAddress, cityCode.getFullName(), state, zipCode, roomCount, bathCount, 
                 garageCount, homeFootage, fYardFootage, bYardFootage);
     }
