@@ -28,7 +28,7 @@ public enum CityCode {
     
     public static void validateCode(String code) {
         String valid = "";
-        for (var c : CityCode.values()) {
+        for (CityCode c : CityCode.values()) { //don't use var
             if (code.equals(c.toString())) {
                 return;
             }

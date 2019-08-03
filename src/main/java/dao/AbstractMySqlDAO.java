@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A base class from which all Oracle specific Data Access Objects can be derived. Common
+ * A base class from which all MySql specific Data Access Objects can be derived. Common
  * functionality surrounding DAO lifecycle and dependencies should be defined in this abstract
  * class.
  * <p>

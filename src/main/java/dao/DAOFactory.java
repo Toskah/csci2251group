@@ -110,7 +110,7 @@ public abstract class DAOFactory {
     /**
      * Given a class token for a DAO interface class, such as {@link SlumlordsDAO}, returns a
      * class object for the respective implementation class, for example,
-     * {@link SlumlordsOracleDAO}. Currently, this simply injects an {@code "Oracle"} in front
+     * {@link SlumlordsMySqlDAO}. Currently, this simply injects an {@code "MySql} in front
      * of the DAO suffix that all DAO interfaces should have, and finds the corresponding class on
      * the classpath using reflection.
      *
@@ -131,7 +131,7 @@ public abstract class DAOFactory {
 
         String implementationClassName = interfaceName
                 .substring(0, interfaceName.length() - 3)
-                .concat("OracleDAO");
+                .concat("MySqlDAO");
         Class<?> implementationClass;
 
         try {
