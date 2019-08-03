@@ -2,7 +2,7 @@ package database;
 
 /**
  *
- * @author Alex
+ * @author Alex Costello
  */
 public class Tenant {
     private Integer propertyID;
@@ -10,9 +10,9 @@ public class Tenant {
     private CityCode cityCode;
     private String tenantName;
     private String phoneNumber;
+    private String vacancyIndicator;
     private final static String SQLcreate = "(FOREIGN KEY (propertyID) REFERENCES PropertyDB (propertyID), "
-            + "type char(1) REFERENCES PropertyDB (type), cityCode char REFERENCES PropertyDB (cityCode), "
-            + "name String PRIMARY KEY, phoneNumber String";
+            + "tenantID INTEGER PRIMARY KEY AUTOINCREMENT, name String PRIMARY KEY, phoneNumber String";
     
     Tenant(Integer propertyID, String tenantName, String phoneNumber) {
         validateID(propertyID);

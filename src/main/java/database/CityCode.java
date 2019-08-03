@@ -1,11 +1,11 @@
 package database;
 
 /**
- *
- * @author Alex
+ * Enum for property city codes
+ * @author Alex Costello
  */
 public enum CityCode {
-    ABQ("Albuquerque"), SAF("Santa Fe"), ROW("Roswell");
+    ABQ("Albuquerque"), SAF("Santa Fe"), ROW("Roswell"); // Incomplete list
     private String fullName;
     private final static Integer minLength = 3;
     private final static Integer maxLength = 3;
@@ -26,9 +26,13 @@ public enum CityCode {
         return maxLength;
     }
     
+    /**
+     * For double-checking city code
+     * @param code String version of city code
+     */
     public static void validateCode(String code) {
         String valid = "";
-        for (CityCode c : CityCode.values()) { //don't use var
+        for (CityCode c : CityCode.values()) {
             if (code.equals(c.toString())) {
                 return;
             }
