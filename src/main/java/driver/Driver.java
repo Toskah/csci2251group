@@ -3,8 +3,9 @@ package driver;
 import dao.DAOFactory;
 import dao.PropertyDAO;
 import dao.SlumlordDAO;
+import dao.TenantDAO;
 
-import javax.sound.sampled.Line;
+
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -20,6 +21,7 @@ public class Driver {
     String OwnerID = "ID"; //Place Holder until I can grab data from database and website
     PropertyDAO DAO = DAOFactory.create(PropertyDAO.class);
     SlumlordDAO SDAO = DAOFactory.create(SlumlordDAO.class);
+    TenantDAO TDAO = DAOFactory.create(TenantDAO.class);
 
 
     public Driver(){
@@ -29,7 +31,7 @@ public class Driver {
         } catch(SQLException e){
             System.out.println("SQL Exception occurred");
             System.out.println(e.getErrorCode());
-            getLogger().log(Level.WARNING, "SQL try catch caught something");
+            getLogger().log(Level.WARNING, "SQL try-catch caught something");
         }
 
     }
@@ -42,14 +44,9 @@ public class Driver {
         return Logger.getLogger(Driver.class.getName());
     }
 
-    /**
-     * Will send info to the website
-     */
-    private void sendInfo() {
+    private static void dbLoop(){
 
     }
-    private void recInfo(){
 
-    }
 
 }
