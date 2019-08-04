@@ -7,31 +7,49 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 
 /**
- * Creates database and sets up property and tenant tables within.
+ * This class initially creates the system's database then connects to the database to create the required 
+ * tables. Most of this can be done manually, however this is intended to make installation easier for
+ * Slumlords, LLC. 
  * @author Alex Costello
  */
 public class DBDriver {
-    private static final boolean debug = true;
+    private static final boolean debug = true; //set to false to disable non-error output
     private static Connection db;
-    private static final String DB_NAME = "slumlords";
-    private static final String createPropertySQL = "CREATE TABLE property (" + Property.getSQLCreate() + ");";
-    private static final String createTenantSQL = "CREATE TABLE tenant (" + Tenant.getSQLCreate() + ");";
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost/";
-    static final String USER = "root";
-    static final String PASS = "password";
+
+    private static final String DB_NAME = "slumlord";
+    private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    private static final String DB_URL = "jdbc:mysql://localhost/";
+    private static final String USER = "root";
+    private static final String PASS = "password";
+    private static final Integer cityCodeLength = 3;
+    private static final Integer maxAddrLength = 40;
     
+    private static final String slumlordColumns = "pid int AUTO_INCREMENT, slumlord_userName varchar(30), "
+            + "slumlord_first_name varchar(30), slumlord_last_name varchar(30), slumlord_dob date, primary key (pid)";
+    private static final String propertyColumns = "property_ID int AUTO_INCREMENT, "
+            + "property_type varchar(1), property_address varchar(" + maxAddrLength + "), property_city_code "
+            + "varchar(" + cityCodeLength + "), property_numRooms int, property_numBrooms int, property_garage_count int, "
+            + "property_sqr_foot int, property_frontY_sqr_foot int, property_backY_sqr_foot int, property_num_tenants int, "
+            + "property_rental_fee decimal(6,2), property_last_payment_date date, property_owner_id varchar(30), "
+            + "property_vacancy_ind varchar(1), primary key (property_ID), foreign key (property_owner_id) references slumlord (slumord_userName)";
+    private static final String tenantColumns = "property_ID INT, tenant_ID int AUTO_INCREMENT, tenant_first_name varchar(30), "
+            + "tenant_last_name varChar(30), tenant_phone_number varchar(10), tenant_dob date, tenant_address varchar(40), "
+            + "tenant_city varchar(20), tenant_zipCode char(5), primary key (tenant_ID), "
+            + "foreign key (property_ID) references property (property_ID)";
+        
     public static void main(String[] args) {
         createDB();
         db = dbConnect();
-        dropTable(db, "property"); //delete, used for personal testing
+//        dropTable(db, "slumlord");
+//        dropTable(db, "property");
+//        dropTable(db, "tenant"); REMOVE WHEN TESTING IS FINISHED
+        createTable(db, "slumlord");
         createTable(db, "property");
         createTable(db, "tenant");
         
-        try {
+        try { //closes connection to database after tables were created
             db.close();
         } catch (SQLException e) {
             System.out.println("Error closing database connection in main. Error: " + e.getMessage());
@@ -39,7 +57,7 @@ public class DBDriver {
     }
     
     /**
-     * Checks if database already exists, if not, creates the database
+     * Checks if database already exists, and if database is not found this method will create it.
      */
     public static void createDB() {
         boolean exists = false;
@@ -52,13 +70,13 @@ public class DBDriver {
             if (debug) {
                 System.out.println("Connecting to localhost...");
             }
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
             
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);            
             if (debug) {
                 System.out.println("Checking if database exists...");
             }
-            resultSet = conn.getMetaData().getCatalogs();
             
+            resultSet = conn.getMetaData().getCatalogs();            
             while (resultSet.next()) {
                 String databaseName = resultSet.getString(1);
                 if (databaseName.equals(DB_NAME)) {
@@ -92,13 +110,12 @@ public class DBDriver {
     }
     
     /**
-     * Connects to the database for table methods
+     * A method to connect to the database. The connection is required for table creation and deletion.
      * @return connection to database
      */
     public static Connection dbConnect() {
         Connection conn = null;
-        String dbName = "Slumlord";
-        String connString = DB_URL + dbName;
+        String connString = DB_URL + DB_NAME;
         
         try {
             conn = DriverManager.getConnection(connString, USER, PASS);
@@ -106,8 +123,7 @@ public class DBDriver {
             if (debug) {
                 System.out.println("dbConnect: Connected to database " + connString);
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             System.err.println("Received SQLException when trying to open db: "
                     + connString + " " + ex.getMessage());
             System.err.println("Connection string: " + connString);
@@ -117,52 +133,33 @@ public class DBDriver {
     }
     
     /**
-     * Tries to create the given table name. Requires that the code to create the table is
+     * A method to create table of name passed through parameters. This requires that the getCreateSQL
+     * method has the SQL code required already set up to create the tables.
      * already predefined.
      * @param conn connection to the database
      * @param tableName name of the table to create
      */
     public static void createTable(Connection conn, String tableName) {
         boolean exists = false;
+        String sql;
         Statement stmt = null;
         ResultSet resultSet = null;
-        String sql;
-//        testing to see if new method works, need tenant table to work first
-//        PreparedStatement ps = null;
-//        String sql = "SELECT property FROM name WHERE type='table' AND name='" +DB_NAME +"';";
         
         try {
-//            if (debug) {
-//                System.out.printf("Checking for '%s' table in database...\n", tableName);
-//            }
-//            ps = conn.prepareStatement(sql);
-//            if (ps.execute()) {
-//                resultSet = ps.getResultSet();
-//                if (!resultSet.isClosed()) {
-//                    resultSet.next();
-//                    if (resultSet.getRow() >= 0) {
-//                        exists = resultSet.getString(1).equals(tableName);
-//                    }
-//                    resultSet.close();
-//                } else {
-//                    if (debug) {
-//                        System.out.println("Result set is closed.");
-//                    }
-//                }
-//            }
-
-            resultSet = conn.getMetaData().getTables(null, null, tableName, null);
-            while (resultSet.next()) {
-                if (resultSet.getString(3).equals(tableName)) {
-                    if (debug) {
-                        System.out.printf("%s table already exists in database.\n", tableName);
-                    }
-                    exists = true;
-                }
+            if (debug) {
+                System.out.printf("Checking for '%s' table in database...\n", tableName);
             }
             
-            if(!exists) {
-                sql = getCreateSQL(tableName);
+            resultSet = conn.getMetaData().getTables(null, null, tableName, null);
+            if (resultSet.next()) {
+                if (debug) {
+                    System.out.printf("%s table already exists in database.\n", tableName);
+                }
+                exists = true;
+            }
+            
+            if(!exists) { //creates table if not found
+                sql = "CREATE TABLE IF NOT EXISTS " + tableName + " (" + getColumnSQL(tableName) + ");";
                 stmt = conn.createStatement();
                 stmt.executeUpdate(sql);
                 if(debug) {
@@ -175,12 +172,16 @@ public class DBDriver {
     }
     
     /**
-     * Drops given table, use the method with caution. Intended for development.
+     * Drops given table, use the method with caution.Intended for development. Note that using this 
+     * method removes the given table and all data with it. You can not drop a table if it is referenced
+     * in another, meaning tables have to be deleted in reverse order of creation.
+     * @param db connection to the database
      * @param tableName name of table to drop
      */
     public static void dropTable(Connection db, String tableName) {
         PreparedStatement ps = null;
         String sql = "DROP TABLE " + tableName;
+        
         try {
             ps = db.prepareStatement(sql);
             ps.execute();
@@ -189,6 +190,7 @@ public class DBDriver {
                     + e.getMessage());
             System.out.println("SQL: " + sql);
         }
+        
         if (debug) {
             System.out.println("Dropped table " + tableName);
         }
@@ -199,11 +201,14 @@ public class DBDriver {
      * @param tableName name of table
      * @return SQL string
      */
-    public static String getCreateSQL(String tableName) {
-        if (tableName.equals("property")) {
-            return createPropertySQL;
-        } else if (tableName.equals("tenant")) {
-            return createTenantSQL;
+    public static String getColumnSQL(String tableName) {
+        switch (tableName) {
+            case "slumlord":
+                return slumlordColumns;
+            case "property":
+                return propertyColumns;
+            case "tenant":
+                return tenantColumns;
         }
         return null;
     }
