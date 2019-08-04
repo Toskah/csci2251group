@@ -15,36 +15,35 @@ import java.sql.Statement;
  * @author Alex Costello
  */
 public class DBDriver {
-    private static final boolean debug = true; //set to false to disable non-error output
-    private static Connection db;
-
+    private static final boolean DEBUG = true; //set to false to disable non-error output
     private static final String DB_NAME = "slumlord";
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     private static final String DB_URL = "jdbc:mysql://localhost/";
     private static final String USER = "root";
     private static final String PASS = "password";
-    private static final Integer cityCodeLength = 3;
-    private static final Integer maxAddrLength = 40;
+    private static final Integer CITYCODELENGTH = 3;
+    private static final Integer MAXADDRLENGTH = 40;
+    private static final String SLUMLORD_FIELDS = "slumlord_user_name varchar(30), "
+            + "slumlord_first_name varchar(30), slumlord_last_name varchar(30), slumlord_dob date, "
+            + "primary key (slumlord_user_name)";
+    private static final String PROPERTY_FIELDS = "property_ID int auto_increment, "
+            + "property_type varchar(1), property_address varchar(" + MAXADDRLENGTH + "), "
+            + "property_city_code varchar(" + CITYCODELENGTH + "), property_numRooms int, "
+            + "property_numBrooms int, property_garage_count int, property_sqr_foot int, "
+            + "property_frontY_sqr_foot int, property_backY_sqr_foot int, property_num_tenants int, "
+            + "property_rental_fee numeric(6,2), property_last_payment_date date, property_owner_id varchar(30), "
+            + "property_vacancy_ind varchar(1), primary key (property_ID), foreign key (property_owner_id) "
+            + "references slumlord (slumlord_user_name)";
+    private static final String TENANT_FIELDS = "property_ID int not null, tenant_ID int auto_increment, "
+            + "tenant_first_name varchar(30), tenant_last_name varchar(30), tenant_phone_number varchar(10), "
+            + "tenant_dob date, tenant_address varchar(40), tenant_city varchar(20), tenant_zipCode char(5), "
+            + "primary key (tenant_ID), foreign key (property_ID) references property (property_ID)";
     
-    private static final String slumlordColumns = "pid int AUTO_INCREMENT, slumlord_userName varchar(30), "
-            + "slumlord_first_name varchar(30), slumlord_last_name varchar(30), slumlord_dob date, primary key (pid)";
-    private static final String propertyColumns = "property_ID int AUTO_INCREMENT, "
-            + "property_type varchar(1), property_address varchar(" + maxAddrLength + "), property_city_code "
-            + "varchar(" + cityCodeLength + "), property_numRooms int, property_numBrooms int, property_garage_count int, "
-            + "property_sqr_foot int, property_frontY_sqr_foot int, property_backY_sqr_foot int, property_num_tenants int, "
-            + "property_rental_fee decimal(6,2), property_last_payment_date date, property_owner_id varchar(30), "
-            + "property_vacancy_ind varchar(1), primary key (property_ID), foreign key (property_owner_id) references slumlord (slumord_userName)";
-    private static final String tenantColumns = "property_ID INT, tenant_ID int AUTO_INCREMENT, tenant_first_name varchar(30), "
-            + "tenant_last_name varChar(30), tenant_phone_number varchar(10), tenant_dob date, tenant_address varchar(40), "
-            + "tenant_city varchar(20), tenant_zipCode char(5), primary key (tenant_ID), "
-            + "foreign key (property_ID) references property (property_ID)";
-        
+    private static Connection db; 
+    
     public static void main(String[] args) {
         createDB();
         db = dbConnect();
-//        dropTable(db, "slumlord");
-//        dropTable(db, "property");
-//        dropTable(db, "tenant"); REMOVE WHEN TESTING IS FINISHED
         createTable(db, "slumlord");
         createTable(db, "property");
         createTable(db, "tenant");
@@ -67,12 +66,12 @@ public class DBDriver {
         
         try {
             Class.forName(JDBC_DRIVER); 
-            if (debug) {
+            if (DEBUG) {
                 System.out.println("Connecting to localhost...");
             }
             
             conn = DriverManager.getConnection(DB_URL, USER, PASS);            
-            if (debug) {
+            if (DEBUG) {
                 System.out.println("Checking if database exists...");
             }
             
@@ -80,7 +79,7 @@ public class DBDriver {
             while (resultSet.next()) {
                 String databaseName = resultSet.getString(1);
                 if (databaseName.equals(DB_NAME)) {
-                    if (debug) {
+                    if (DEBUG) {
                         System.out.printf("Database '%s' already exists.\n", DB_NAME);
                     }
                     exists = true;
@@ -89,14 +88,14 @@ public class DBDriver {
             resultSet.close();
             
             if(!exists) {
-                if (debug) {
+                if (DEBUG) {
                     System.out.printf("Database does not exist. Creating database '%s'...\n", DB_NAME);
                 }   
                 stmt = conn.createStatement();
                 String sql = "CREATE DATABASE " + DB_NAME;
                 stmt.executeUpdate(sql);
                 
-                if (debug) {
+                if (DEBUG) {
                     System.out.println("Database created successfully.");
                 }
             }
@@ -120,7 +119,7 @@ public class DBDriver {
         try {
             conn = DriverManager.getConnection(connString, USER, PASS);
             DatabaseMetaData dm = (DatabaseMetaData) conn.getMetaData();
-            if (debug) {
+            if (DEBUG) {
                 System.out.println("dbConnect: Connected to database " + connString);
             }
         } catch (SQLException ex) {
@@ -133,9 +132,8 @@ public class DBDriver {
     }
     
     /**
-     * A method to create table of name passed through parameters. This requires that the getCreateSQL
-     * method has the SQL code required already set up to create the tables.
-     * already predefined.
+     * A method to create table of name passed through parameters if it does not already exist. This
+     * requires that the getCreateSQL method has the SQL code required already set up to create the tables.
      * @param conn connection to the database
      * @param tableName name of the table to create
      */
@@ -146,23 +144,24 @@ public class DBDriver {
         ResultSet resultSet = null;
         
         try {
-            if (debug) {
+            if (DEBUG) {
                 System.out.printf("Checking for '%s' table in database...\n", tableName);
             }
             
             resultSet = conn.getMetaData().getTables(null, null, tableName, null);
             if (resultSet.next()) {
-                if (debug) {
+                if (DEBUG) {
                     System.out.printf("%s table already exists in database.\n", tableName);
                 }
                 exists = true;
             }
             
-            if(!exists) { //creates table if not found
-                sql = "CREATE TABLE IF NOT EXISTS " + tableName + " (" + getColumnSQL(tableName) + ");";
-                stmt = conn.createStatement();
-                stmt.executeUpdate(sql);
-                if(debug) {
+            //tries to create table anyways, just in case
+            sql = "CREATE TABLE IF NOT EXISTS " + tableName + " (" + getTableFields(tableName) + ");";
+            stmt = conn.createStatement();
+            stmt.executeUpdate(sql);
+            if (!exists) {
+                if(DEBUG) {
                     System.out.printf("Created %s table in database.\n", tableName);
                 }
             }
@@ -191,7 +190,7 @@ public class DBDriver {
             System.out.println("SQL: " + sql);
         }
         
-        if (debug) {
+        if (DEBUG) {
             System.out.println("Dropped table " + tableName);
         }
     }
@@ -201,14 +200,14 @@ public class DBDriver {
      * @param tableName name of table
      * @return SQL string
      */
-    public static String getColumnSQL(String tableName) {
+    public static String getTableFields(String tableName) {
         switch (tableName) {
             case "slumlord":
-                return slumlordColumns;
+                return SLUMLORD_FIELDS;
             case "property":
-                return propertyColumns;
+                return PROPERTY_FIELDS;
             case "tenant":
-                return tenantColumns;
+                return TENANT_FIELDS;
         }
         return null;
     }
