@@ -1,7 +1,7 @@
 package database;
 
 /**
- *
+ * INCOMPLETE
  * @author Alex Costello
  */
 public class Tenant {
@@ -11,8 +11,9 @@ public class Tenant {
     private String tenantName;
     private String phoneNumber;
     private String vacancyIndicator;
-    private final static String SQLcreate = "(FOREIGN KEY (propertyID) REFERENCES PropertyDB (propertyID), "
-            + "tenantID INTEGER PRIMARY KEY AUTOINCREMENT, name String PRIMARY KEY, phoneNumber String";
+    private final static String SQLcreate = "propertyID INT, tenantID INT NOT NULL AUTO_INCREMENT, name STRING, "
+            + "phoneNumber STRING, vacanyIndicator STRING, PRIMARY KEY (tenantID), "
+            + "FOREIGN KEY (propertID) REFERENCES " + DBDriver.getDBName() + ".property";
     
     Tenant(Integer propertyID, String tenantName, String phoneNumber) {
         validateID(propertyID);
@@ -38,7 +39,7 @@ public class Tenant {
     public void validateNumber(String number) {
         if(number.length() != 10) {
             throw new IllegalArgumentException(String.format("Phone number %s is invalid; must be a 10 digit number.", number));
-        } //UNFINISHED
+        }
     }
     
     private Integer getPropertyID() {

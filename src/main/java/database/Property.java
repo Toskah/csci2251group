@@ -1,5 +1,6 @@
 package database;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,30 +15,25 @@ import java.util.Date;
 //Notes to Josh: Not all variables are created or have their verification made yet (table needs more columns)
 public class Property {
     private static final boolean debug = true;
-    private Integer id;
-    private String type;
+    private Integer id, roomCount, bathCount, garageCount, homeFootage, fYardFootage,
+            bYardFootage;
+    private String type, zipCode;
     private CityCode cityCode;
     private static final Integer cityCodeLength = 3;
     private String streetAddress;
     private static final Integer minAddrLength = 5;
     private static final Integer maxAddrLength = 40;
-    private final String state = "NM";
-    private String zipCode;
     private static final Integer zipCodeLength = 5;
-    private Integer roomCount;
-    private Integer bathCount;
-    private Integer garageCount;
-    private Integer homeFootage;
-    private Integer fYardFootage;
-    private Integer bYardFootage;
     private static final Integer maxFootage = 5000;
+    private final String state = "NM";    
+    private BigDecimal rentalFee;    
     private static Connection db;
-    private Date lastPaymentDate;
-    private final static String SQLcreate = "propertyID INTEGER NOT NULL AUTO_INCREMENT, "
+    private final Date lastPaymentDate;
+    private final static String SQLcreate = "propertyID INT NOT NULL AUTO_INCREMENT, "
             + "type CHAR(1), cityCode CHAR(" + CityCode.getMaxLength() + "), addr VARCHAR"
             + "(" + maxAddrLength + "), zipCode CHAR(5), roomCount INT(2), bathCount INT(1), "
             + "garageCount INT(1), homeFootage INT, fYardFootage INT, bYardFootage INT, "
-            + "PRIMARY KEY (propertyID)";
+            + "rentalFee DECIMAL, lastPaymentDate DATE, PRIMARY KEY (propertyID)";
     
     /**
      * Property constructor for adding properties that checks required variables and stores them
@@ -54,7 +50,7 @@ public class Property {
      */
     Property(String type, CityCode cityCode, String streetAddress, String zipCode, 
             int roomCount, int bathCount, int garageCount, int homeFootage, int fYardFootage, 
-            int bYardFootage) {
+            int bYardFootage, BigDecimal rentalFee, Date lastPaymentDate) {
         validateType(type);
         validateCity(cityCode.toString());
         validateAddress(streetAddress);
@@ -64,6 +60,8 @@ public class Property {
         validateGarage(garageCount);
         validateHomeFootage(homeFootage);
         validateYardFootage(fYardFootage, bYardFootage);
+        validateFee(rentalFee);
+        validateDate(lastPaymentDate);
         this.type = type;
         this.cityCode = cityCode;
         this.streetAddress = streetAddress;
@@ -74,6 +72,8 @@ public class Property {
         this.homeFootage = homeFootage;
         this.fYardFootage = fYardFootage;
         this.bYardFootage = bYardFootage;
+        this.rentalFee = rentalFee;
+        this.lastPaymentDate = lastPaymentDate;
     }
     
     /**
@@ -84,6 +84,7 @@ public class Property {
     Property(ResultSet result) throws SQLException {
         String dbType, dbAddr, dbCity, dbZip;
         Integer dbID, dbRooms, dbBaths, dbGarages, dbHomeFootage, dbFYardFootage, dbBYardFootage;
+        Date dbLastPaymentDate;
         dbID = result.getInt("propertyid");
         dbType = result.getString("type");
         dbCity = result.getString("citycode");
@@ -95,6 +96,7 @@ public class Property {
         dbHomeFootage = result.getInt("homeFootage");
         dbFYardFootage = result.getInt("fYardFootage");
         dbBYardFootage = result.getInt("bYardFootage");
+        dbLastPaymentDate = result.getDate("lastPaymentDate");
         validateType(dbType);
         validateAddress(dbAddr);
         validateZip(dbZip);
@@ -105,6 +107,7 @@ public class Property {
         validateGarage(garageCount);
         validateHomeFootage(homeFootage);
         validateYardFootage(fYardFootage, bYardFootage);
+        validateDate(dbLastPaymentDate);
         this.id = dbID;
         this.type = dbType;
         this.cityCode = CityCode.valueOf(dbCity);
@@ -116,6 +119,7 @@ public class Property {
         this.homeFootage = dbHomeFootage;
         this.fYardFootage = dbFYardFootage;
         this.bYardFootage = dbBYardFootage;
+        this.lastPaymentDate = dbLastPaymentDate;
     }
     
     /**
@@ -164,7 +168,7 @@ public class Property {
             throw new IllegalArgumentException(String.format("Street address '%s' is %d "
                     + "characters long; max length is %d",
                     streetAddress, streetAddress.length(), maxAddrLength));
-        }
+        } //Needs more validation
     }
     
     /**
@@ -290,6 +294,16 @@ public class Property {
                     + " invalid; must be <= %d", bYardFootage, maxFootage));
         }
     }
+    
+    private void validateFee(BigDecimal fee) {
+        
+    }
+    
+    private void validateDate(Date d) {
+        //if () {
+            
+        //}
+    }
 
     /**
      * Gets the type
@@ -372,7 +386,7 @@ public class Property {
     }
 
     /**
-     * Gets property table SQL creation string
+     * Gets SQL string that defines required columns in property table
      * @return SQLcreate string
      */
     public static String getSQLCreate() {
