@@ -4,6 +4,7 @@ import dao.DAOFactory;
 import dao.PropertyDAO;
 import dao.SlumlordDAO;
 import dao.TenantDAO;
+import database.DBDriver;
 
 
 import java.sql.SQLException;
@@ -22,7 +23,7 @@ public class Driver {
     PropertyDAO DAO = DAOFactory.create(PropertyDAO.class);
     SlumlordDAO SDAO = DAOFactory.create(SlumlordDAO.class);
     TenantDAO TDAO = DAOFactory.create(TenantDAO.class);
-
+    DBDriver DBD = new DBDriver();
 
     public Driver(){
         try{
@@ -44,7 +45,17 @@ public class Driver {
         return Logger.getLogger(Driver.class.getName());
     }
 
+    /**
+     * Iterate through DB and return result
+     */
     private static void dbLoop(){
+        boolean iter = true;
+        String result = null;
+        while(iter){
+            for (int i = 0; i < 100; i++){
+                if
+            }
+        }
 
     }
 
