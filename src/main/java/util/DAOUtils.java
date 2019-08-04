@@ -1,7 +1,8 @@
 package util;
 
 import service.SlumlordConnection;
-import oracle.jdbc.OracleConnection;
+
+import com.mysql.jdbc.MySQLConnection;
 import java.sql.Connection;
 
 import javax.sql.DataSource;
@@ -96,11 +97,11 @@ public interface DAOUtils {
 
         if (conn instanceof Connection) {
             try {
-                OracleConnection oraConn = (OracleConnection) conn;
-                int currentRowPrefetch = oraConn.getDefaultRowPrefetch();
+                MySQLConnection mysqlConn = (MySQLConnection) conn;
+                int currentRowPrefetch = mysqlConn.getDefaultFetchSize();
 
                 if (currentRowPrefetch != DEFAULT_ROW_PREFETCH) {
-                    oraConn.setDefaultRowPrefetch(DEFAULT_ROW_PREFETCH);
+                    mysqlConn.setDefaultFetchSize(DEFAULT_ROW_PREFETCH);
                     Logger.getLogger(DAOUtils.class.getName()).log(INFO,
                             "Changed default row prefetch size from {0} to {1}.",
                             new Object[]{currentRowPrefetch, DEFAULT_ROW_PREFETCH});

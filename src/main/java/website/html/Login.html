@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <header>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            overflow-y: scroll;
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .navbar {
+            display: block;
+            overflow: hidden;
+            background-color: #333;
+
+        }
+
+        .navbar a {
+            float: left;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+        .navbar a:hover {
+            background-color: #DDD;
+            color: black;
+        }
+
+        .navbar a.active {
+            background-color: #299AD7;
+            color: white;
+        }
+
+        .topDesign {
+            background-color: #299AD7;
+            padding: 5px;
+        }
+
+        h1 {
+            font-size: 50px;
+            margin-left: 1in;
+            color: white;
+        }
+
+        .username {
+            margin-left: 1in;
+        }
+
+        .password {
+            margin-left: 1in;
+            color: black;
+        }
+
+        .login {
+            padding: 10px;
+            display: table;
+            overflow: auto;
+            margin-left: 1.3in;
+            margin-bottom: 0.7in;
+            background-color: #DDD;
+            border-radius: 3px;
+        }
+    </style>
+  </header>
+  <body background="https://images.pond5.com/abstract-white-low-poly-background-footage-085888938_prevstill.jpeg">
+    <div class="navbar">
+      <a style= "margin-left: 1.5in" class="active" href="Home.html">Home</a>
+      <a href="Properties.html">Properties</a>
+      <a href="#about">About</a>
+      <a style= "margin-left: 8.5in" href="login.html">Login</a>
+    </div>
+    <div class="topDesign"
+         style="padding-left:16px">
+    <h1> Slum Lords LLC.</h1>
+    <div class="login">
+        <h3>Enter your Username and Password</h3>
+        <hr width="50%">
+        <br>
+    <input class="username"
+          type = 'text'
+          id= 'userName'
+          placeholder='username'
+          style= 'color: black'/>
+    <br>
+    <br>
+    <input class="password"
+        style="-webkit-text-security: disc;"
+        type = 'text'
+        id= 'password'
+        placeholder= 'password' />
+      <br>
+      <br>
+        <button type="button"
+                style="margin-left: 1.4in">Login</button>
+    </div>
+    </div>
+
+</input>
+
+<!-- <li> Click for: <a href = "vacantUnits.html"> Vacant units </a>
+ </li>
+ <li> Click for: <a href = "rentUnits.html"> Rent units </a>
+ </li> -->
+  </body>
+</html>

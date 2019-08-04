@@ -108,9 +108,9 @@ public abstract class DAOFactory {
     }
 
     /**
-     * Given a class token for a DAO interface class, such as {@link SlumlordsDAO}, returns a
+     * Given a class token for a DAO interface class, such as {@link SlumlordDAO}, returns a
      * class object for the respective implementation class, for example,
-     * {@link SlumlordsMySqlDAO}. Currently, this simply injects an {@code "MySql} in front
+     * {@link SlumlordMySqlDAO}. Currently, this simply injects an {@code "MySql} in front
      * of the DAO suffix that all DAO interfaces should have, and finds the corresponding class on
      * the classpath using reflection.
      *

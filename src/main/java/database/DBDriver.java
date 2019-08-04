@@ -19,7 +19,7 @@ public class DBDriver {
     private static final String DB_NAME = "slumlords";
     private static final String createPropertySQL = "CREATE TABLE property (" + Property.getSQLCreate() + ");";
     private static final String createTenantSQL = "CREATE TABLE tenant (" + Tenant.getSQLCreate() + ");";
-    static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
+    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://localhost/";
     static final String USER = "root";
     static final String PASS = "password";
@@ -97,7 +97,7 @@ public class DBDriver {
      */
     public static Connection dbConnect() {
         Connection conn = null;
-        String dbName = "Slumlords";
+        String dbName = "Slumlord";
         String connString = DB_URL + dbName;
         
         try {

@@ -39,7 +39,7 @@ public interface TenantDAO extends BaseDAO {
         private final String address;
         private final String city;
         private final String zipCode;
-        private final int propertId;
+        private final int propertyId;
 
         public TenantData(
                 int pid,
@@ -60,7 +60,7 @@ public interface TenantDAO extends BaseDAO {
             this.address = address;
             this.city = city;
             this.zipCode = zipCode;
-            this.propertId = propertId;
+            this.propertyId = propertId;
         }
 
         public int getPid() {
@@ -87,8 +87,8 @@ public interface TenantDAO extends BaseDAO {
             return address;
         }
 
-        public int getPropertId() {
-            return propertId;
+        public int getPropertyId() {
+            return propertyId;
         }
 
         public String getCity() {

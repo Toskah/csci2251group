@@ -30,7 +30,7 @@ public class PropertyMySqlDAO extends AbstractMySqlDAO implements PropertyDAO {
             ALL_PROPERTIES_BY_OWNER_QUERY.replace("/* ALL_PROPERTIES_BY_OWNER_QUERY /*\n",
                     "ALL_VACANT_PROPERTIES_QUERY")
                     .replace("where property_owner_id = ?", "where property_vacancy_indicator = 'V'\n")
-                    .concat("and property_number_tenants = 0");
+                    .concat("and property_numb_tenants = 0");
 
     private static final String INSERT_NEW_PROPERTY_STATEMENT
             = "insert into property(property_type, property_address, property_city_code, property_num_rooms, "
@@ -80,14 +80,20 @@ public class PropertyMySqlDAO extends AbstractMySqlDAO implements PropertyDAO {
         String propertyAddress = rs.getString(3);
         String cityCode = rs.getString(4);
         int numberOfRooms = rs.getInt(5);
-        int numberOfTenants = rs.getInt(6);
-        BigDecimal rentalFee = rs.getBigDecimal(7);
-        LocalDate lastPaymentDate = DAOUtils.getLocalDate(rs, 8);
-        String ownerId = rs.getString(9);
-        String vacancyInd = rs.getString(10);
+        int numberOfBathrooms = rs.getInt(6);
+        int garageCount = rs.getInt(7);
+        BigDecimal sqrFoot = rs.getBigDecimal(8);
+        BigDecimal fYardFoot = rs.getBigDecimal(9);
+        BigDecimal bYardFoot = rs.getBigDecimal(10);
+        int numberOfTenants = rs.getInt(11);
+        BigDecimal rentalFee = rs.getBigDecimal(12);
+        LocalDate lastPaymentDate = DAOUtils.getLocalDate(rs, 13);
+        String ownerId = rs.getString(14);
+        String vacancyInd = rs.getString(15);
 
-        return new PropertyBaseData(propertyId, propertyType, propertyAddress, cityCode, numberOfRooms, numberOfTenants,
-                rentalFee, lastPaymentDate, ownerId, vacancyInd);
+        return new PropertyBaseData(propertyId, propertyType, propertyAddress, cityCode, numberOfRooms,
+                numberOfBathrooms, garageCount, sqrFoot, fYardFoot, bYardFoot, numberOfTenants, rentalFee,
+                lastPaymentDate, ownerId, vacancyInd);
     }
 
     @Override

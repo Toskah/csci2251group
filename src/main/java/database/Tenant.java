@@ -11,9 +11,9 @@ public class Tenant {
     private String tenantName;
     private String phoneNumber;
     private String vacancyIndicator;
-    private final static String SQLcreate = "propertyID INT, tenantID INT NOT NULL AUTO_INCREMENT, name STRING, "
-            + "phoneNumber STRING, vacanyIndicator STRING, PRIMARY KEY (tenantID), "
-            + "FOREIGN KEY (propertID) REFERENCES " + DBDriver.getDBName() + ".property";
+    private final static String SQLcreate = "propertyID INT, tenantID INT NOT NULL AUTO_INCREMENT, name varchar(30), "
+            + "phoneNumber varchar(10), vacancyIndicator varchar(1), PRIMARY KEY (tenantID), "
+            + "FOREIGN KEY (propertyID) REFERENCES property(propertyID)" ;
     
     Tenant(Integer propertyID, String tenantName, String phoneNumber) {
         validateID(propertyID);

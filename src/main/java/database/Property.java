@@ -16,25 +16,28 @@ import java.util.Date;
 public class Property {
     private static final boolean debug = true;
     private Integer id, roomCount, bathCount, garageCount, homeFootage, fYardFootage,
-            bYardFootage;
+            bYardFootage, numberOfTenants;
     private String type, zipCode;
     private CityCode cityCode;
-    private static final Integer cityCodeLength = 3;
+    private BigDecimal rentalFee;
     private String streetAddress;
+
+    private static final Integer cityCodeLength = 3;
     private static final Integer minAddrLength = 5;
     private static final Integer maxAddrLength = 40;
     private static final Integer zipCodeLength = 5;
     private static final Integer maxFootage = 5000;
     private final String state = "NM";    
-    private BigDecimal rentalFee;    
+
     private static Connection db;
     private final Date lastPaymentDate;
     private final static String SQLcreate = "propertyID INT NOT NULL AUTO_INCREMENT, "
-            + "type CHAR(1), cityCode CHAR(" + CityCode.getMaxLength() + "), addr VARCHAR"
-            + "(" + maxAddrLength + "), zipCode CHAR(5), roomCount INT(2), bathCount INT(1), "
-            + "garageCount INT(1), homeFootage INT, fYardFootage INT, bYardFootage INT, "
-            + "rentalFee DECIMAL, lastPaymentDate DATE, PRIMARY KEY (propertyID)";
-    
+            + "property_type varchar(1), property_address varchar(" + maxAddrLength + "), property_city_code varchar(3), "
+            + "property_numRooms int, property_numBrooms int, property_garage_count int, property_sqr_foot int, property_frontY_sqr_foot,"
+            + "property_backY_sqr_foot int, property_num_tenants int, property_rental_fee number(6,2), property_last_payment_date date,"
+            + "property_owner_id varchar(30), property_vacancy_ind varchar(1), primary key (propertyID), "
+            + "foreign key (property_owner_id) references slumord(username)";
+
     /**
      * Property constructor for adding properties that checks required variables and stores them
      * @param type 
