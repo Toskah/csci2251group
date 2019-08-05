@@ -7,6 +7,7 @@ import dao.PropertyDAO;
 import dao.SlumlordDAO;
 import dao.TenantDAO;
 import database.DBDriver;
+import util.DAOUtils;
 
 
 import java.io.Serializable;
@@ -15,10 +16,12 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.WARNING;
 
 
@@ -37,7 +40,7 @@ public class Driver {
     public Driver(){
         try{
             List<PropertyDAO.PropertyBaseData> Properties = DAO.listAllPropertiesByOwner(OwnerID);
-            getLogger().log(Level.INFO, "Grabbing property list");
+            getLogger().log(INFO, "Grabbing property list");
         } catch(SQLException e){
             System.out.println("SQL Exception occurred");
             System.out.println(e.getErrorCode());
@@ -65,7 +68,7 @@ public class Driver {
         return Logger.getLogger(Driver.class.getName());
     }
 
-   /* public List<Serializable> serializePropertyByOwnerList(String ownerID) {
+    public List<Serializable> serializePropertyByOwnerList(String ownerID) {
         List<PropertyBaseData> result = null;
         try {
            result = DAO.listAllPropertiesByOwner(ownerID);
@@ -97,17 +100,21 @@ public class Driver {
     }
 
     public List<PropertyBaseData> upcomingRentalNotice(String ownerID) throws SQLException{
-        List<PropertyBaseData> result = null;
-        try{
-            result = DAO.listAllPropertiesByOwner(ownerID);
-        }catch(Exception e){
-            getLogger().log(WARNING, "An error({0}) occurred fetching properties by ownerID",
-                    e.getMessage().trim());
-        }
+        List<PropertyBaseData> result = DAO.listAllPropertiesByOwner(ownerID);
 
+       result = result.stream()
+                .map(property -> {
+                   int daysTillRentDue = Period.between(LocalDate.now(), property.getLastPaymentDate()).getDays();
 
-        List<TenantDAO.TenantData> evictions = TDAO.listTenantByProperties(result.stream().map(PropertyBaseData::getPropertyId)
-             .collect(Collectors.toList()));
+                   if(daysTillRentDue > 7)
+                       return property;
+                   else return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        getLogger().log(INFO, "Rent due notice sent to [{0}]", DAOUtils.mkPrintList(result.stream().map(PropertyBaseData::getPropertyAddress).collect(Collectors.toList())));
+        return result;
     }
 
 
