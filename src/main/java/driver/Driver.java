@@ -8,8 +8,6 @@ import dao.SlumlordDAO;
 import dao.TenantDAO;
 import database.DBDriver;
 import util.DAOUtils;
-
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -17,10 +15,8 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.WARNING;
 

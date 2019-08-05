@@ -63,7 +63,7 @@ public class SerialReceiver {
         final int port = 5678;
         ServerSocket server = null;
         Socket client = null;
-        SerializedClass data = null;
+
         ObjectInputStream in = null;
 
         server = serverSetup(port);
