@@ -8,6 +8,7 @@ import dao.SlumlordDAO;
 import dao.TenantDAO;
 import database.DBDriver;
 import util.DAOUtils;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.WARNING;
 
@@ -45,10 +47,36 @@ public class Driver {
 
     }
 
-    public void decideCommand(int userCommand) {
+    public void decideCommand(int userCommand) throws SQLException {
         //TODO decision logic
         //TODO fill dao by ownerID
+        String todo = null;
+        switch (userCommand) {
+            case 1:
+                todo = "Total Rent Due";
+                totalRentDue(OwnerID);
+                break;
+            case 2:
+                todo = "Next Payment Due";
+                upcomingRentalNotice(OwnerID);
+                break;
+            case 3:
+                todo = "First missed payment";
+                firstNoPay(OwnerID);
+                break;
+            case 4:
+                todo = "Second missed payment";
+                SecondNoPay(OwnerID);
+                break;
+            case 5:
+                todo = "Third missed payment";
+                ThirdNoPay(OwnerID);
+                break;
+            default:
+                todo = "Invalid command";
+                break;
 
+        }
 
     }
 
