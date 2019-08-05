@@ -7,9 +7,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.WARNING;
+import static java.util.logging.Level.SEVERE;
 /**
  * This class initially creates the system's database then connects to the database to create the required 
  * tables. Most of this can be done manually, however this is intended to make installation easier for
@@ -25,11 +27,11 @@ public class DBDriver {
     private static final String PASS = "password";
     private static final Integer CITYCODELENGTH = 3;
     private static final Integer MAXADDRLENGTH = 40;
-    private static final String SLUMLORD_FIELDS = "slumlord_user_name varchar(30) not null, "
+    private static final String SLUMLORD_FIELDS = "slumlord_user_name varchar(30) not null unique, "
             + "slumlord_first_name varchar(30), slumlord_last_name varchar(30), slumlord_dob date, "
             + "primary key (slumlord_user_name)";
     private static final String PROPERTY_FIELDS = "property_ID int auto_increment, "
-            + "property_type varchar(1), property_address varchar(" + MAXADDRLENGTH + "), "
+            + "property_type varchar(1), property_address varchar(" + MAXADDRLENGTH + ") unique, "
             + "property_city_code varchar(" + CITYCODELENGTH + "), property_numRooms int, "
             + "property_numBrooms int, property_garage_count int, property_sqr_foot int, "
             + "property_frontY_sqr_foot int, property_backY_sqr_foot int, property_num_tenants int, "
@@ -43,9 +45,18 @@ public class DBDriver {
     
     private static Connection db; 
     
+    /**
+     * Empty constructor
+     */
+    public DBDriver() {
+    }
+    
     public static void main(String[] args) {
         createDB();
         db = dbConnect();
+        dropTable(db, "tenant");
+        dropTable(db, "property");
+        dropTable(db, "slumlord"); //REMOVE BEFORE FINAL VERSION
         createTable(db, "slumlord");
         createTable(db, "property");
         createTable(db, "tenant");
@@ -53,7 +64,7 @@ public class DBDriver {
         try { //closes connection to database after tables were created
             db.close();
         } catch (SQLException e) {
-            getLogger().log(Level.WARNING, "Error closing database connection after running. Error: {0}", 
+            getLogger().log(WARNING, "Error closing database connection after running. Error: {0}", 
                     e.getMessage());
         }
     }
@@ -69,33 +80,33 @@ public class DBDriver {
         
         try {
             Class.forName(JDBC_DRIVER); 
-            getLogger().log(Level.INFO, "Connecting to localhost");
+            getLogger().log(INFO, "Connecting to localhost");
             conn = DriverManager.getConnection(DB_URL, USER, PASS);  
             
-            getLogger().log(Level.INFO, "Checking if database exists already");
+            getLogger().log(INFO, "Checking if database exists already");
             resultSet = conn.getMetaData().getCatalogs();            
             while (resultSet.next()) {
                 String databaseName = resultSet.getString(1);
                 if (databaseName.equals(DB_NAME)) {
-                    getLogger().log(Level.INFO, "Database {0} already exists", DB_NAME);
+                    getLogger().log(INFO, "Database {0} already exists", DB_NAME);
                     exists = true;
                 }
             }
             resultSet.close();
             
             if(!exists) {  
-                getLogger().log(Level.INFO, "Database {0} does not exist. Creating it now", DB_NAME);
+                getLogger().log(INFO, "Database {0} does not exist. Creating it now", DB_NAME);
                 stmt = conn.createStatement();
                 String sql = "CREATE DATABASE " + DB_NAME;
                 stmt.executeUpdate(sql);
                 
-                getLogger().log(Level.INFO, "Database {0} created successfully", DB_NAME);
+                getLogger().log(INFO, "Database {0} created successfully", DB_NAME);
             }
         } catch (ClassNotFoundException c) {
-            getLogger().log(Level.SEVERE, "Invalid java driver class name {0} given. Error: {1}", 
+            getLogger().log(SEVERE, "Invalid java driver class name {0} given. Error: {1}", 
                     new Object[]{JDBC_DRIVER, c.getMessage()});
         } catch (SQLException e) {
-            getLogger().log(Level.SEVERE, "Error while checking for or creating database. Error: {0}", 
+            getLogger().log(SEVERE, "Error while checking for or creating database. Error: {0}", 
                     e.getMessage());
         }
     }
@@ -111,9 +122,9 @@ public class DBDriver {
         try {
             conn = DriverManager.getConnection(connString, USER, PASS);
             DatabaseMetaData dm = (DatabaseMetaData) conn.getMetaData();
-            getLogger().log(Level.INFO, "dbConnect connected to database {0}", connString);
+            getLogger().log(INFO, "dbConnect connected to database {0}", connString);
         } catch (SQLException ex) {
-            getLogger().log(Level.SEVERE, "Received SQLException when tying to open database. Connection String: {0}. Error: {1}", 
+            getLogger().log(SEVERE, "Received SQLException when tying to open database. Connection String: {0}. Error: {1}", 
                     new Object[]{connString, ex.getMessage()});
         }
         return conn;
@@ -132,10 +143,10 @@ public class DBDriver {
         ResultSet resultSet = null;
         
         try {
-            getLogger().log(Level.INFO, "Checking for {0} table in database", tableName);
+            getLogger().log(INFO, "Checking for {0} table in database", tableName);
             resultSet = conn.getMetaData().getTables(null, null, tableName, null);
             if (resultSet.next()) {
-                getLogger().log(Level.INFO, "{0} table already exists in database", tableName);
+                getLogger().log(INFO, "{0} table already exists in database", tableName);
                 exists = true;
             }
             
@@ -144,10 +155,10 @@ public class DBDriver {
             stmt = conn.createStatement();
             stmt.executeUpdate(sql);
             if (!exists) {
-                getLogger().log(Level.INFO, "Created {0} table in database", tableName);
+                getLogger().log(INFO, "Created {0} table in database", tableName);
             }
         } catch (SQLException e) {
-            getLogger().log(Level.SEVERE, "Error creating {0} table. Error: {2}",
+            getLogger().log(SEVERE, "Error creating {0} table. Error: {2}", 
                     new Object[]{tableName, e.getMessage()});
         }
     }
@@ -167,14 +178,11 @@ public class DBDriver {
             ps = db.prepareStatement(sql);
             ps.execute();
         } catch (SQLException e) {
-            getLogger().log(Level.WARNING, "Error when trying to drop table {0}. SQL given: {1}. Error: {2}", 
+            getLogger().log(WARNING, "Error when trying to drop table {0}. SQL given: {1}. Error: {2}", 
                     new Object[]{tableName, sql, e.getMessage()});
         }
         
-        if (DEBUG) {
-            getLogger().log(Level.INFO, "Dropped table {0} successfully", tableName);
-        }
-        
+        getLogger().log(INFO, "Dropped table {0} successfully", tableName);       
     }
     
     /**
