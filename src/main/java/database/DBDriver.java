@@ -25,7 +25,7 @@ public class DBDriver {
     private static final String PASS = "password";
     private static final Integer CITYCODELENGTH = 3;
     private static final Integer MAXADDRLENGTH = 40;
-    private static final String SLUMLORD_FIELDS = "slumlord_user_name varchar(30), "
+    private static final String SLUMLORD_FIELDS = "slumlord_user_name varchar(30) not null, "
             + "slumlord_first_name varchar(30), slumlord_last_name varchar(30), slumlord_dob date, "
             + "primary key (slumlord_user_name)";
     private static final String PROPERTY_FIELDS = "property_ID int auto_increment, "
@@ -36,10 +36,10 @@ public class DBDriver {
             + "property_rental_fee numeric(6,2), property_last_payment_date date, property_owner_id varchar(30), "
             + "property_vacancy_ind varchar(1), primary key (property_ID), foreign key (property_owner_id) "
             + "references slumlord (slumlord_user_name)";
-    private static final String TENANT_FIELDS = "property_ID int not null, tenant_ID int auto_increment, "
-            + "tenant_first_name varchar(30), tenant_last_name varchar(30), tenant_phone_number varchar(10), "
-            + "tenant_dob date, tenant_address varchar(40), tenant_city varchar(20), tenant_zipCode char(5), "
-            + "primary key (tenant_ID), foreign key (property_ID) references property (property_ID)";
+    private static final String TENANT_FIELDS = "tenant_ID int auto_increment, tenant_first_name varchar(30), "
+            + "tenant_last_name varchar(30), tenant_phone_number varchar(10), tenant_dob date, tenant_address "
+            + "varchar(40), tenant_city varchar(20), tenant_zipCode varchar(5), tenant_property_ID int, "
+            + "primary key (tenant_ID), foreign key (tenant_property_ID) references property (property_ID)";
     
     private static Connection db; 
     
@@ -153,7 +153,7 @@ public class DBDriver {
     }
     
     /**
-     * Drops given table, use the method with caution.Intended for development. Note that using this 
+     * Drops given table, use the method with caution. Intended for development. Note that using this 
      * method removes the given table and all data with it. You can not drop a table if it is referenced
      * in another, meaning tables have to be deleted in reverse order of creation.
      * @param db connection to the database
@@ -203,7 +203,7 @@ public class DBDriver {
     }
     
     /**
-     * Will log info in case of an error
+     * For logging errors and information about running this class.
      * @return the logged action
      */
     private static Logger getLogger() {
