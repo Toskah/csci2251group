@@ -3,3 +3,5 @@
 
 #ignore idea specific files
 /.idea/
+
+/build/

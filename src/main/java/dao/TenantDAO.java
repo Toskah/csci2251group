@@ -1,5 +1,6 @@
 package dao;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
@@ -30,7 +31,7 @@ public interface TenantDAO extends BaseDAO {
     /**
      * Data access class for the tenant table
      */
-    final class TenantData {
+    final class TenantData implements Serializable {
         private final int pid;
         private final String firstName;
         private final String lastName;

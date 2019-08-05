@@ -1,6 +1,7 @@
 package dao;
 
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
@@ -31,7 +32,7 @@ public interface SlumlordDAO extends BaseDAO {
     /**
      * data access class for the {@code SLUMLORD} table
      */
-    final class SlumData {
+    final class SlumData implements Serializable {
         private final int pid;
         private final String userName;
         private final String firstName;

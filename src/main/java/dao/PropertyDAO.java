@@ -1,5 +1,6 @@
 package dao;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -54,7 +55,7 @@ public interface PropertyDAO extends BaseDAO {
     /**
      * Data access class for passing data from the db easily.
      */
-    final class PropertyBaseData {
+    final class PropertyBaseData implements Serializable {
         private final int propertyId;
         private final String propertyType;
         private final String propertyAddress;

@@ -1,16 +1,25 @@
 package driver;
 
+import Serialize.SerializedClass;
 import dao.DAOFactory;
+import dao.PropertyDAO.*;
 import dao.PropertyDAO;
 import dao.SlumlordDAO;
 import dao.TenantDAO;
 import database.DBDriver;
 
 
+import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import static java.util.logging.Level.WARNING;
 
 
 /**
@@ -32,9 +41,20 @@ public class Driver {
         } catch(SQLException e){
             System.out.println("SQL Exception occurred");
             System.out.println(e.getErrorCode());
-            getLogger().log(Level.WARNING, "SQL try-catch caught something");
+            getLogger().log(WARNING, "SQL try-catch caught something");
         }
 
+    }
+
+    public void decideCommand(int userCommand){
+        //TODO decision logic
+        //TODO fill dao by ownerID
+        /**
+         * switch:
+         *   case 1:
+         *      totalRentDue(userCommand.getOwner)
+         *      getInputString
+         */
     }
 
     /**
@@ -45,18 +65,49 @@ public class Driver {
         return Logger.getLogger(Driver.class.getName());
     }
 
-    /**
-     * Iterate through DB and return result
-     */
-    private static void dbLoop(){
-        boolean iter = true;
-        String result = null;
-        while(iter){
-            for (int i = 0; i < 100; i++){
-                if
-            }
+   /* public List<Serializable> serializePropertyByOwnerList(String ownerID) {
+        List<PropertyBaseData> result = null;
+        try {
+           result = DAO.listAllPropertiesByOwner(ownerID);
+        }catch(Exception e){
+            getLogger().log(WARNING, "An error({0}) occurred fetching properties by ownerID",
+                    e.getMessage().trim());
         }
 
+
+    }
+
+    public BigDecimal totalRentDue(String ownerID) {
+        List<PropertyBaseData> result = null;
+        try{
+          result = DAO.listAllPropertiesByOwner(ownerID);
+        }catch(Exception e){
+            getLogger().log(WARNING, "An error({0}) occurred fetching properties by ownerID",
+                    e.getMessage().trim());
+        }
+        BigDecimal totalRent = new BigDecimal(0);
+
+        for(PropertyBaseData prop : result){
+            totalRent.add(prop.getRentalFee());
+        }
+        return result.stream()
+                .map(PropertyBaseData::getRentalFee)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.valueOf(0));
+    }
+
+    public List<PropertyBaseData> upcomingRentalNotice(String ownerID) throws SQLException{
+        List<PropertyBaseData> result = null;
+        try{
+            result = DAO.listAllPropertiesByOwner(ownerID);
+        }catch(Exception e){
+            getLogger().log(WARNING, "An error({0}) occurred fetching properties by ownerID",
+                    e.getMessage().trim());
+        }
+
+
+        List<TenantDAO.TenantData> evictions = TDAO.listTenantByProperties(result.stream().map(PropertyBaseData::getPropertyId)
+             .collect(Collectors.toList()));
     }
 
 
