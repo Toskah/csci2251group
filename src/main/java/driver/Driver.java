@@ -37,11 +37,11 @@ public class Driver {
     TenantDAO TDAO = DAOFactory.create(TenantDAO.class);
     DBDriver DBD = new DBDriver();
 
-    public Driver(){
-        try{
+    public Driver() {
+        try {
             List<PropertyDAO.PropertyBaseData> Properties = DAO.listAllPropertiesByOwner(OwnerID);
             getLogger().log(INFO, "Grabbing property list");
-        } catch(SQLException e){
+        } catch (SQLException e) {
             System.out.println("SQL Exception occurred");
             System.out.println(e.getErrorCode());
             getLogger().log(WARNING, "SQL try-catch caught something");
@@ -49,19 +49,16 @@ public class Driver {
 
     }
 
-    public void decideCommand(int userCommand){
+    public void decideCommand(int userCommand) {
         //TODO decision logic
         //TODO fill dao by ownerID
-        /**
-         * switch:
-         *   case 1:
-         *      totalRentDue(userCommand.getOwner)
-         *      getInputString
-         */
+
+
     }
 
     /**
      * Will log info in case of an error
+     *
      * @return the logged action
      */
     private static Logger getLogger() {
@@ -71,26 +68,26 @@ public class Driver {
     public List<Serializable> serializePropertyByOwnerList(String ownerID) {
         List<PropertyBaseData> result = null;
         try {
-           result = DAO.listAllPropertiesByOwner(ownerID);
-        }catch(Exception e){
+            result = DAO.listAllPropertiesByOwner(ownerID);
+        } catch (Exception e) {
             getLogger().log(WARNING, "An error({0}) occurred fetching properties by ownerID",
                     e.getMessage().trim());
         }
 
-
+        return null;
     }
 
     public BigDecimal totalRentDue(String ownerID) {
         List<PropertyBaseData> result = null;
-        try{
-          result = DAO.listAllPropertiesByOwner(ownerID);
-        }catch(Exception e){
+        try {
+            result = DAO.listAllPropertiesByOwner(ownerID);
+        } catch (Exception e) {
             getLogger().log(WARNING, "An error({0}) occurred fetching properties by ownerID",
                     e.getMessage().trim());
         }
         BigDecimal totalRent = new BigDecimal(0);
 
-        for(PropertyBaseData prop : result){
+        for (PropertyBaseData prop : result) {
             totalRent.add(prop.getRentalFee());
         }
         return result.stream()
@@ -99,16 +96,16 @@ public class Driver {
                 .orElse(BigDecimal.valueOf(0));
     }
 
-    public List<PropertyBaseData> upcomingRentalNotice(String ownerID) throws SQLException{
+    public List<PropertyBaseData> upcomingRentalNotice(String ownerID) throws SQLException {
         List<PropertyBaseData> result = DAO.listAllPropertiesByOwner(ownerID);
 
-       result = result.stream()
+        result = result.stream()
                 .map(property -> {
-                   int daysTillRentDue = Period.between(LocalDate.now(), property.getLastPaymentDate()).getDays();
+                    int daysTillRentDue = Period.between(LocalDate.now(), property.getLastPaymentDate()).getDays();
 
-                   if(daysTillRentDue > 7)
-                       return property;
-                   else return null;
+                    if (daysTillRentDue == 15)
+                        return property;
+                    else return null;
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -117,5 +114,62 @@ public class Driver {
         return result;
     }
 
+    public List<PropertyBaseData> firstNoPay(String ownerID) throws SQLException {
+        List<PropertyBaseData> result = DAO.listAllPropertiesByOwner(ownerID);
+
+        result = result.stream()
+                .map(property -> {
+                    int daysSincePaid = Period.between(LocalDate.now(), property.getLastPaymentDate()).getDays();
+
+                    if (daysSincePaid >= 37)
+                        return property;
+                    else return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        getLogger().log(INFO, "Rent due notice sent to [{0}]", DAOUtils.mkPrintList(result.stream().map(PropertyBaseData::getPropertyAddress).collect(Collectors.toList())));
+        return result;
+    }
+
+    public List<PropertyBaseData> SecondNoPay(String ownerID) throws SQLException {
+        List<PropertyBaseData> result = DAO.listAllPropertiesByOwner(ownerID);
+
+        result = result.stream()
+                .map(property -> {
+                    int daysSincePaid = Period.between(LocalDate.now(), property.getLastPaymentDate()).getDays();
+
+                    if (daysSincePaid >= 60)
+                        return property;
+                    else return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        getLogger().log(INFO, "Rent due notice sent to [{0}]", DAOUtils.mkPrintList(result.stream().map(PropertyBaseData::getPropertyAddress).collect(Collectors.toList())));
+        return result;
+    }
+
+    public List<PropertyBaseData> ThirdNoPay(String ownerID) throws SQLException {
+        List<PropertyBaseData> result = DAO.listAllPropertiesByOwner(ownerID);
+
+        result = result.stream()
+                .map(property -> {
+                    int daysSincePaid = Period.between(LocalDate.now(), property.getLastPaymentDate()).getDays();
+
+                    if (daysSincePaid >= 75)
+                        return property;
+                    else return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        getLogger().log(INFO, "Rent due notice sent to [{0}]", DAOUtils.mkPrintList(result.stream().map(PropertyBaseData::getPropertyAddress).collect(Collectors.toList())));
+        return result;
+    }
+
+    public List<PropertyBaseData> Vacancy() throws SQLException {
+        List<PropertyBaseData> result = DAO.listAllVacantProperties();
+
+        return result;
+
+    }
 
 }
