@@ -147,7 +147,7 @@ public class DBDriver {
                 getLogger().log(Level.INFO, "Created {0} table in database", tableName);
             }
         } catch (SQLException e) {
-            getLogger().log(Level.SEVERE, "Error creating {0} table. Error: {2}", 
+            getLogger().log(Level.SEVERE, "Error creating {0} table. Error: {2}",
                     new Object[]{tableName, e.getMessage()});
         }
     }

@@ -21,16 +21,16 @@ public class PropertyMySqlDAO extends AbstractMySqlDAO implements PropertyDAO {
 
     //SQL statements
     private static final String ALL_PROPERTIES_BY_OWNER_QUERY
-            = "select /* ALL_PROPERTIES_BY_OWNER_QUERY /*\n"
+            = "select /* ALL_PROPERTIES_BY_OWNER_QUERY */\n"
             + "    * \n" //this is very bad we should never do this
             + "from property\n"
             + "where property_owner_id = ?";
 
     private static final String ALL_VACANT_PROPERTIES_QUERY =
-            ALL_PROPERTIES_BY_OWNER_QUERY.replace("/* ALL_PROPERTIES_BY_OWNER_QUERY /*\n",
-                    "ALL_VACANT_PROPERTIES_QUERY")
-                    .replace("where property_owner_id = ?", "where property_vacancy_indicator = 'V'\n")
-                    .concat("and property_numb_tenants = 0");
+            ALL_PROPERTIES_BY_OWNER_QUERY.replace("/* ALL_PROPERTIES_BY_OWNER_QUERY */\n",
+                    "/* ALL_VACANT_PROPERTIES_QUERY */")
+                    .replace("where property_owner_id = ?", "where property_vacancy_ind = 'V'\n")
+                    .concat("and property_num_tenants = 0");
 
     private static final String INSERT_NEW_PROPERTY_STATEMENT
             = "insert into property(property_type, property_address, property_city_code, property_num_rooms, "
