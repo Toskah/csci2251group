@@ -15,12 +15,12 @@ public class PropertyValidator {
     private BigDecimal rentalFee;
     private Date lastPaymentDate;
     
-    private static final Integer cityCodeLength = 3;
-    private static final Integer minAddrLength = 5;
-    private static final Integer maxAddrLength = 40;
-    private static final Integer zipCodeLength = 5;
-    private static final Integer maxFootage = 5000;
-    private final String state = "NM";
+    private static final Integer CITYCODE_LENGTH = 3;
+    private static final Integer MIN_ADDR_LENGTH = 5;
+    private static final Integer MAX_ADDR_LENGTH = 40;
+    private static final Integer ZIPCODE_LENGTH = 5;
+    private static final Integer MAX_FOOTAGE = 5000;
+    private static final String STATE = "NM";
 
     /**
      * Property constructor for adding properties that checks required variables and stores them
@@ -100,15 +100,15 @@ public class PropertyValidator {
             throw new IllegalArgumentException(String.format("Street address must not be null"));
         }
 
-        if (streetAddress.length() < minAddrLength) {
+        if (streetAddress.length() < MIN_ADDR_LENGTH) {
             throw new IllegalArgumentException(String.format("Street address '%s' is %d "
                     + "characters long; min length is %d",
-                    streetAddress, streetAddress.length(), minAddrLength));
+                    streetAddress, streetAddress.length(), MIN_ADDR_LENGTH));
         }
-        if (streetAddress.length() > maxAddrLength) {
+        if (streetAddress.length() > MAX_ADDR_LENGTH) {
             throw new IllegalArgumentException(String.format("Street address '%s' is %d "
                     + "characters long; max length is %d",
-                    streetAddress, streetAddress.length(), maxAddrLength));
+                    streetAddress, streetAddress.length(), MAX_ADDR_LENGTH));
         } //Needs more validation
     }
     
@@ -128,10 +128,10 @@ public class PropertyValidator {
         if (zipCode == null) {
             throw new IllegalArgumentException(String.format("zip code must not be null"));
         }
-        if (zipCode.length() != zipCodeLength) {
+        if (zipCode.length() != ZIPCODE_LENGTH) {
             throw new IllegalArgumentException(String.format("Illegal zip code '%s' (length %d);"
                     + " valid codes are %d chars",
-                    zipCode, zipCode.length(), zipCodeLength));
+                    zipCode, zipCode.length(), ZIPCODE_LENGTH));
         }
         if (!zipCode.matches("^[0-9]*$")) {
             throw new IllegalArgumentException(String.format("Illegal zip code '%s'; valid codes"
@@ -223,7 +223,7 @@ public class PropertyValidator {
         }
         if (fYardFootage > maxFootage) {
             throw new IllegalArgumentException(String.format("Front yard's square footage %d is"
-                    + " invalid; must be <= %d", fYardFootage, maxFootage));
+                    + " invalid; must be <= %d", fYardFootage, MAX_FOOTAGE));
         }
         
         if (bYardFootage <= 0) {
@@ -232,7 +232,7 @@ public class PropertyValidator {
         }
         if (bYardFootage > maxFootage) {
             throw new IllegalArgumentException(String.format("Back yard's square footage %d is"
-                    + " invalid; must be <= %d", bYardFootage, maxFootage));
+                    + " invalid; must be <= %d", bYardFootage, MAX_FOOTAGE));
         }
     }
     
@@ -306,8 +306,8 @@ public class PropertyValidator {
      * Gets home square footage
      * @return home footage
      */
-    public Integer getHomeFootage() {
-        return homeFootage;
+    public Integer getSquareFootage() {
+        return squareFootage;
     }
     
     /**

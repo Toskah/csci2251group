@@ -7,6 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class initially creates the system's database then connects to the database to create the required 
@@ -51,7 +53,8 @@ public class DBDriver {
         try { //closes connection to database after tables were created
             db.close();
         } catch (SQLException e) {
-            System.out.println("Error closing database connection in main. Error: " + e.getMessage());
+            getLogger().log(Level.WARNING, "Error closing database connection after running. Error: {0}", 
+                    e.getMessage());
         }
     }
     
@@ -66,45 +69,34 @@ public class DBDriver {
         
         try {
             Class.forName(JDBC_DRIVER); 
-            if (DEBUG) {
-                System.out.println("Connecting to localhost...");
-            }
+            getLogger().log(Level.INFO, "Connecting to localhost");
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);  
             
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);            
-            if (DEBUG) {
-                System.out.println("Checking if database exists...");
-            }
-            
+            getLogger().log(Level.INFO, "Checking if database exists already");
             resultSet = conn.getMetaData().getCatalogs();            
             while (resultSet.next()) {
                 String databaseName = resultSet.getString(1);
                 if (databaseName.equals(DB_NAME)) {
-                    if (DEBUG) {
-                        System.out.printf("Database '%s' already exists.\n", DB_NAME);
-                    }
+                    getLogger().log(Level.INFO, "Database {0} already exists", DB_NAME);
                     exists = true;
                 }
             }
             resultSet.close();
             
-            if(!exists) {
-                if (DEBUG) {
-                    System.out.printf("Database does not exist. Creating database '%s'...\n", DB_NAME);
-                }   
+            if(!exists) {  
+                getLogger().log(Level.INFO, "Database {0} does not exist. Creating it now", DB_NAME);
                 stmt = conn.createStatement();
                 String sql = "CREATE DATABASE " + DB_NAME;
                 stmt.executeUpdate(sql);
                 
-                if (DEBUG) {
-                    System.out.println("Database created successfully.");
-                }
+                getLogger().log(Level.INFO, "Database {0} created successfully", DB_NAME);
             }
         } catch (ClassNotFoundException c) {
-            System.out.println("Invalid driver class name, class was not found. Error: " + c.getMessage());
-            System.exit(1);
+            getLogger().log(Level.SEVERE, "Invalid java driver class name {0} given. Error: {1}", 
+                    new Object[]{JDBC_DRIVER, c.getMessage()});
         } catch (SQLException e) {
-            System.out.println("Error while checking for or creating database. Error: " + e.getMessage());
-            System.exit(1);
+            getLogger().log(Level.SEVERE, "Error while checking for or creating database. Error: {0}", 
+                    e.getMessage());
         }
     }
     
@@ -119,14 +111,10 @@ public class DBDriver {
         try {
             conn = DriverManager.getConnection(connString, USER, PASS);
             DatabaseMetaData dm = (DatabaseMetaData) conn.getMetaData();
-            if (DEBUG) {
-                System.out.println("dbConnect: Connected to database " + connString);
-            }
+            getLogger().log(Level.INFO, "dbConnect connected to database {0}", connString);
         } catch (SQLException ex) {
-            System.err.println("Received SQLException when trying to open db: "
-                    + connString + " " + ex.getMessage());
-            System.err.println("Connection string: " + connString);
-            System.exit(1);
+            getLogger().log(Level.SEVERE, "Received SQLException when tying to open database. Connection String: {0}. Error: {1}", 
+                    new Object[]{connString, ex.getMessage()});
         }
         return conn;
     }
@@ -144,15 +132,10 @@ public class DBDriver {
         ResultSet resultSet = null;
         
         try {
-            if (DEBUG) {
-                System.out.printf("Checking for '%s' table in database...\n", tableName);
-            }
-            
+            getLogger().log(Level.INFO, "Checking for {0} table in database", tableName);
             resultSet = conn.getMetaData().getTables(null, null, tableName, null);
             if (resultSet.next()) {
-                if (DEBUG) {
-                    System.out.printf("%s table already exists in database.\n", tableName);
-                }
+                getLogger().log(Level.INFO, "{0} table already exists in database", tableName);
                 exists = true;
             }
             
@@ -161,12 +144,11 @@ public class DBDriver {
             stmt = conn.createStatement();
             stmt.executeUpdate(sql);
             if (!exists) {
-                if(DEBUG) {
-                    System.out.printf("Created %s table in database.\n", tableName);
-                }
+                getLogger().log(Level.INFO, "Created {0} table in database", tableName);
             }
         } catch (SQLException e) {
-            System.out.printf("Error creating %s table. Error: %s\n", tableName, e.getMessage());
+            getLogger().log(Level.SEVERE, "Error creating {0} table. Error: {2}", 
+                    new Object[]{tableName, e.getMessage()});
         }
     }
     
@@ -185,14 +167,14 @@ public class DBDriver {
             ps = db.prepareStatement(sql);
             ps.execute();
         } catch (SQLException e) {
-            System.out.println("dropTable: Received SQLException when trying to execute statement: "
-                    + e.getMessage());
-            System.out.println("SQL: " + sql);
+            getLogger().log(Level.WARNING, "Error when trying to drop table {0}. SQL given: {1}. Error: {2}", 
+                    new Object[]{tableName, sql, e.getMessage()});
         }
         
         if (DEBUG) {
-            System.out.println("Dropped table " + tableName);
+            getLogger().log(Level.INFO, "Dropped table {0} successfully", tableName);
         }
+        
     }
     
     /**
@@ -218,5 +200,13 @@ public class DBDriver {
      */
     public static String getDBName() {
         return DB_NAME;
+    }
+    
+    /**
+     * Will log info in case of an error
+     * @return the logged action
+     */
+    private static Logger getLogger() {
+        return Logger.getLogger(DBDriver.class.getName());
     }
 }
