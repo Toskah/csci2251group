@@ -1,6 +1,6 @@
 package driver;
 
-import Serialize.SerializedClass;
+
 import dao.DAOFactory;
 import dao.PropertyDAO.*;
 import dao.PropertyDAO;
@@ -144,13 +144,13 @@ public class Driver {
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        getLogger().log(INFO, "Rent due notice sent to [{0}]", DAOUtils.mkPrintList(result.stream().map(PropertyBaseData::getPropertyAddress).collect(Collectors.toList())));
+        getLogger().log(INFO, "Second Rent due notice sent to [{0}]", DAOUtils.mkPrintList(result.stream().map(PropertyBaseData::getPropertyAddress).collect(Collectors.toList())));
         return result;
     }
 
     public List<PropertyBaseData> ThirdNoPay(String ownerID) throws SQLException {
         List<PropertyBaseData> result = DAO.listAllPropertiesByOwner(ownerID);
-
+        List<PropertyBaseData> vacancies = DAO.listAllVacantProperties();
         result = result.stream()
                 .map(property -> {
                     int daysSincePaid = Period.between(LocalDate.now(), property.getLastPaymentDate()).getDays();
@@ -161,15 +161,17 @@ public class Driver {
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        getLogger().log(INFO, "Rent due notice sent to [{0}]", DAOUtils.mkPrintList(result.stream().map(PropertyBaseData::getPropertyAddress).collect(Collectors.toList())));
+        vacancies.addAll(result);
+        getLogger().log(INFO, "Eviction notice sent to [{0}]", DAOUtils.mkPrintList(result.stream().map(PropertyBaseData::getPropertyAddress).collect(Collectors.toList())));
         return result;
     }
 
     public List<PropertyBaseData> Vacancy() throws SQLException {
         List<PropertyBaseData> result = DAO.listAllVacantProperties();
-
+        getLogger().log(INFO, "Getting list of all vacancies");
         return result;
 
     }
+
 
 }
