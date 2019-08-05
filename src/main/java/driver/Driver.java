@@ -30,6 +30,7 @@ import static java.util.logging.Level.WARNING;
 // send to web client
 public class Driver {
     String OwnerID = "ID"; //Place Holder until I can grab data from database and website
+    String todo = null; //What the driver is supposed to do
     PropertyDAO DAO = DAOFactory.create(PropertyDAO.class);
     SlumlordDAO SDAO = DAOFactory.create(SlumlordDAO.class);
     TenantDAO TDAO = DAOFactory.create(TenantDAO.class);
@@ -50,7 +51,7 @@ public class Driver {
     public void decideCommand(int userCommand) throws SQLException {
         //TODO decision logic
         //TODO fill dao by ownerID
-        String todo = null;
+
         switch (userCommand) {
             case 1:
                 todo = "Total Rent Due";
