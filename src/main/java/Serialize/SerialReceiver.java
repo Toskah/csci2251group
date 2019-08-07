@@ -15,7 +15,7 @@ public class SerialReceiver {
     public SerialReceiver() {
 
         try {
-            Socket socket = new Socket("Local Host", 8080);
+            Socket socket = new Socket("http://localhost/", 8080);
             ObjectInputStream OIS = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             System.out.println("Problem setting socket");

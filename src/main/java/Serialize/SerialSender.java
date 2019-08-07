@@ -28,7 +28,7 @@ public class SerialSender {
 
     public static void send(List<PropertyDAO.PropertyBaseData> objs){
         try{
-            Socket socket = new Socket("Local Host", 8082);
+            Socket socket = new Socket("http://localhost/", 8082);
             ObjectOutputStream OOS = new ObjectOutputStream(socket.getOutputStream());
             OOS.writeObject(objs);
         }catch (IOException e){
