@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertNull;
+
 
 public class TenantDAOIntegrationTest {
     private static final String JDBC_CONNECTION = "jdbc:mysql://localhost/slumlord";

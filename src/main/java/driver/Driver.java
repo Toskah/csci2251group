@@ -1,6 +1,7 @@
 package driver;
 
 
+import Serialize.SerialSender;
 import dao.DAOFactory;
 import dao.PropertyDAO.*;
 import dao.PropertyDAO;
@@ -8,7 +9,6 @@ import dao.SlumlordDAO;
 import dao.TenantDAO;
 import database.DBDriver;
 import util.DAOUtils;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -19,8 +19,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static java.util.logging.Level.INFO;
-import static java.util.logging.Level.WARNING;
+import static java.util.logging.Level.*;
 
 
 /**
@@ -35,6 +34,7 @@ public class Driver {
     SlumlordDAO SDAO = DAOFactory.create(SlumlordDAO.class);
     TenantDAO TDAO = DAOFactory.create(TenantDAO.class);
     DBDriver DBD = new DBDriver();
+    BigDecimal rent;
 
     public Driver() {
         try {
@@ -55,7 +55,10 @@ public class Driver {
         switch (userCommand) {
             case 1:
                 todo = "Total Rent Due";
-                totalRentDue(OwnerID);
+                firstNoPay(OwnerID);
+                SecondNoPay(OwnerID);
+                rent = totalRentDue(OwnerID);
+                SerialSender.send(rent);
                 break;
             case 2:
                 todo = "Next Payment Due";
@@ -75,9 +78,15 @@ public class Driver {
                 break;
             case 6:
                 todo = "List all Vacancies";
-                Vacancy();
+                SerialSender.send(Vacancy());
+                break;
+            case 7:
+                todo = "List all owned properties";
+                SerialSender.send(DAO.listAllPropertiesByOwner(OwnerID));
+                break;
             default:
                 todo = "Invalid command";
+                getLogger().log(SEVERE,"Invalid Command");
                 break;
 
         }
@@ -139,6 +148,7 @@ public class Driver {
                 .collect(Collectors.toList());
 
         getLogger().log(INFO, "Rent due notice sent to [{0}]", DAOUtils.mkPrintList(result.stream().map(PropertyBaseData::getPropertyAddress).collect(Collectors.toList())));
+        SerialSender.send(result);
         return result;
     }
 
@@ -149,9 +159,10 @@ public class Driver {
                 .map(property -> {
                     int daysSincePaid = Period.between(LocalDate.now(), property.getLastPaymentDate()).getDays();
 
-                    if (daysSincePaid >= 37)
+                    if (daysSincePaid >= 37) {
+                        rent.add(property.getRentalFee().multiply(new BigDecimal(1.15)));
                         return property;
-                    else return null;
+                    } else return null;
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -166,9 +177,10 @@ public class Driver {
                 .map(property -> {
                     int daysSincePaid = Period.between(LocalDate.now(), property.getLastPaymentDate()).getDays();
 
-                    if (daysSincePaid >= 60)
+                    if (daysSincePaid >= 60) {
+                        rent.add(property.getRentalFee().multiply(new BigDecimal(1.225)));
                         return property;
-                    else return null;
+                    } else return null;
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -198,6 +210,12 @@ public class Driver {
         List<PropertyBaseData> result = DAO.listAllVacantProperties();
         getLogger().log(INFO, "Getting list of all vacancies");
         return result;
+
+    }
+
+
+    private class TotalRentDue implements Serializable {
+        BigDecimal rentDue;
 
     }
 
