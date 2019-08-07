@@ -19,6 +19,7 @@ public class SerialSender {
         }catch (IOException e){
             e.getMessage().trim();
         }
+
     }
 
 }

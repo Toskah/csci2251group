@@ -73,6 +73,9 @@ public class Driver {
                 todo = "Third missed payment";
                 ThirdNoPay(OwnerID);
                 break;
+            case 6:
+                todo = "List all Vacancies";
+                Vacancy();
             default:
                 todo = "Invalid command";
                 break;
@@ -197,6 +200,5 @@ public class Driver {
         return result;
 
     }
-
 
 }
