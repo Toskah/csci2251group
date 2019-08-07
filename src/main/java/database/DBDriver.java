@@ -54,9 +54,6 @@ public class DBDriver {
     public static void main(String[] args) {
         createDB();
         db = dbConnect();
-        dropTable(db, "tenant");
-        dropTable(db, "property");
-        dropTable(db, "slumlord"); //REMOVE BEFORE FINAL VERSION
         createTable(db, "slumlord");
         createTable(db, "property");
         createTable(db, "tenant");
