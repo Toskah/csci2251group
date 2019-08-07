@@ -214,9 +214,6 @@ public class Driver {
     }
 
 
-    private class TotalRentDue implements Serializable {
-        BigDecimal rentDue;
 
-    }
 
 }
