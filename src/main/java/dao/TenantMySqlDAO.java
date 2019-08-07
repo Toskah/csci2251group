@@ -16,11 +16,11 @@ public class TenantMySqlDAO extends AbstractMySqlDAO implements TenantDAO {
             = "select /* RETRIEVE_TENANTS_BY_PROPERTY */\n"
             + "* \n"//again we should never do this
             + "from tenant\n"
-            + "where tenant_property_id = ?";
+            + "where tenant_property_ID = ?";
 
     private static final String RETRIEVE_TENANTS_BY_PROPERTIES
-            = RETRIEVE_TENANTS_BY_PROPERTY.replace("where tenant_property_id = ?",
-            "where tenant_property_id in ??");
+            = RETRIEVE_TENANTS_BY_PROPERTY.replace("where tenant_property_ID = ?",
+            "where tenant_property_ID in ??");
 
     private final PreparedStatement retrieveTenants;
     private final PreparedStatement listTenants;
