@@ -1,6 +1,7 @@
 package driver;
 
 
+import Serialize.SerialSender;
 import dao.DAOFactory;
 import dao.PropertyDAO.*;
 import dao.PropertyDAO;
@@ -8,6 +9,7 @@ import dao.SlumlordDAO;
 import dao.TenantDAO;
 import database.DBDriver;
 import util.DAOUtils;
+import website.jetty.SerializedSender;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -35,7 +37,7 @@ public class Driver {
     SlumlordDAO SDAO = DAOFactory.create(SlumlordDAO.class);
     TenantDAO TDAO = DAOFactory.create(TenantDAO.class);
     DBDriver DBD = new DBDriver();
-
+    BigDecimal rent;
     public Driver() {
         try {
             List<PropertyDAO.PropertyBaseData> Properties = DAO.listAllPropertiesByOwner(OwnerID);
@@ -55,7 +57,8 @@ public class Driver {
         switch (userCommand) {
             case 1:
                 todo = "Total Rent Due";
-                totalRentDue(OwnerID);
+                rent =  totalRentDue(OwnerID);
+                SerialSender.send(rent);
                 break;
             case 2:
                 todo = "Next Payment Due";
@@ -136,6 +139,7 @@ public class Driver {
                 .collect(Collectors.toList());
 
         getLogger().log(INFO, "Rent due notice sent to [{0}]", DAOUtils.mkPrintList(result.stream().map(PropertyBaseData::getPropertyAddress).collect(Collectors.toList())));
+        SerialSender.send(result);
         return result;
     }
 
@@ -198,5 +202,8 @@ public class Driver {
 
     }
 
+    private class TotalRentDue implements Serializable{
+        BigDecimal rentDue;
 
+    }
 }
