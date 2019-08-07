@@ -15,23 +15,32 @@ import java.util.List;
  * @author Dexter Elliott
  */
 public class SerialSender {
-
-    public static void send(Serializable obj){
-        try{
+    /**
+     * Sets the socket to send objects from for serialized objects
+     *
+     * @param obj The serializable object that is sent to the website
+     */
+    public static void send(Serializable obj) {
+        try {
             Socket socket = new Socket("http://localhost/", 8082);
             ObjectOutputStream OOS = new ObjectOutputStream(socket.getOutputStream());
             OOS.writeObject(obj);
-        }catch (IOException e){
+        } catch (IOException e) {
             e.getMessage().trim();
         }
     }
 
-    public static void send(List<PropertyDAO.PropertyBaseData> objs){
-        try{
+    /**
+     * Sets the socket to send objects from for serialized objects that are lists
+     *
+     * @param objs A serialized list
+     */
+    public static void send(List<PropertyDAO.PropertyBaseData> objs) {
+        try {
             Socket socket = new Socket("http://localhost/", 8082);
             ObjectOutputStream OOS = new ObjectOutputStream(socket.getOutputStream());
             OOS.writeObject(objs);
-        }catch (IOException e){
+        } catch (IOException e) {
             e.getMessage().trim();
         }
 

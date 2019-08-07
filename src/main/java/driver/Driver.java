@@ -9,6 +9,7 @@ import dao.SlumlordDAO;
 import dao.TenantDAO;
 import database.DBDriver;
 import util.DAOUtils;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -24,9 +25,9 @@ import static java.util.logging.Level.*;
 
 /**
  * Author @Dexter Elliott
+ * create instances of DAO Packages and creates methods that handle requests from the website
  */
-// create instances of DAO Packages
-// send to web client
+
 public class Driver {
     String OwnerID = "ID"; //Place Holder until I can grab data from database and website
     String todo = null; //What the driver is supposed to do
@@ -48,9 +49,12 @@ public class Driver {
 
     }
 
+    /**
+     * calls a set of methods depending on the command from the website
+     * @param userCommand The number corresponding with the command that is being requested
+     * @throws SQLException
+     */
     public void decideCommand(int userCommand) throws SQLException {
-        //TODO decision logic
-        //TODO fill dao by ownerID
 
         switch (userCommand) {
             case 1:
@@ -86,7 +90,7 @@ public class Driver {
                 break;
             default:
                 todo = "Invalid command";
-                getLogger().log(SEVERE,"Invalid Command");
+                getLogger().log(SEVERE, "Invalid Command");
                 break;
 
         }
@@ -102,6 +106,11 @@ public class Driver {
         return Logger.getLogger(Driver.class.getName());
     }
 
+    /**
+     * Serializes the list of properties by owner
+     * @param ownerID The owner that is requesting the info
+     * @return The list of Properties belonging to that owner
+     */
     public List<Serializable> serializePropertyByOwnerList(String ownerID) {
         List<PropertyBaseData> result = null;
         try {
@@ -114,6 +123,11 @@ public class Driver {
         return null;
     }
 
+    /**
+     * Gets the total rent due for an owner before any late fees are applied
+     * @param ownerID The owner requesting the info
+     * @return The list of properties as well as the amount of money owed
+     */
     public BigDecimal totalRentDue(String ownerID) {
         List<PropertyBaseData> result = null;
         try {
@@ -133,6 +147,12 @@ public class Driver {
                 .orElse(BigDecimal.valueOf(0));
     }
 
+    /**
+     * Adds a property to a list of properties for an owner who have been sent a statement at 15 days prior to rent due
+     * @param ownerID The owner that is requesting the info
+     * @return The list of properties who have 15 days or less until rent is due
+     * @throws SQLException
+     */
     public List<PropertyBaseData> upcomingRentalNotice(String ownerID) throws SQLException {
         List<PropertyBaseData> result = DAO.listAllPropertiesByOwner(ownerID);
 
@@ -152,6 +172,12 @@ public class Driver {
         return result;
     }
 
+    /**
+     * Makes a list of properties who have missed a payment by 7 days or more
+     * @param ownerID The owner of the property in question
+     * @return The list of properties that have missed the deadline
+     * @throws SQLException
+     */
     public List<PropertyBaseData> firstNoPay(String ownerID) throws SQLException {
         List<PropertyBaseData> result = DAO.listAllPropertiesByOwner(ownerID);
 
@@ -170,6 +196,12 @@ public class Driver {
         return result;
     }
 
+    /**
+     * Makes a list of properties who have missed two payments
+     * @param ownerID The owner of the properties in question
+     * @return The list of properties who have two missed payments
+     * @throws SQLException
+     */
     public List<PropertyBaseData> SecondNoPay(String ownerID) throws SQLException {
         List<PropertyBaseData> result = DAO.listAllPropertiesByOwner(ownerID);
 
@@ -188,6 +220,12 @@ public class Driver {
         return result;
     }
 
+    /**
+     * A list of properties who have not paid in 75 days and are to be evicted
+     * @param ownerID The owner of the property in question
+     * @return The list of properties to have eviction notices sent to
+     * @throws SQLException
+     */
     public List<PropertyBaseData> ThirdNoPay(String ownerID) throws SQLException {
         List<PropertyBaseData> result = DAO.listAllPropertiesByOwner(ownerID);
         List<PropertyBaseData> vacancies = DAO.listAllVacantProperties();
@@ -206,14 +244,17 @@ public class Driver {
         return result;
     }
 
+    /**
+     * A list of all current vacancies
+     * @return The list of all current vacancies
+     * @throws SQLException
+     */
     public List<PropertyBaseData> Vacancy() throws SQLException {
         List<PropertyBaseData> result = DAO.listAllVacantProperties();
         getLogger().log(INFO, "Getting list of all vacancies");
         return result;
 
     }
-
-
 
 
 }

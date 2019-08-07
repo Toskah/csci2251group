@@ -11,7 +11,9 @@ import java.net.Socket;
  */
 public class SerialReceiver {
 
-
+    /**
+     * Sets the socket that the receiver should listen to in order to listen to the website
+     */
     public SerialReceiver() {
 
         try {
@@ -21,7 +23,6 @@ public class SerialReceiver {
             System.out.println("Problem setting socket");
             e.getMessage().trim();
         }
-
 
 
     }
